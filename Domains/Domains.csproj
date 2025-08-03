@@ -6,4 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Enums\" />
+    <Folder Include="Views\" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.5" />
+	  <PackageReference Include="EntityFrameworkCore.EncryptColumn" Version="9.0.0" />
+  </ItemGroup>
+
 </Project>
