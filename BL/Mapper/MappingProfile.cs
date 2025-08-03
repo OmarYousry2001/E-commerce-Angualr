@@ -25,7 +25,9 @@ namespace BL.Mapper
             .ForMember(des => des.ImageName, opt => opt.MapFrom(src => src.ImagePath)).ReverseMap();
 
             CreateMap<ProductDTO, Product>().ReverseMap();
-            //.ForMember(des => des.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+            #endregion
+            #region Category 
+            CreateMap<Category, CategoryDTO>().ReverseMap();
             #endregion
 
 

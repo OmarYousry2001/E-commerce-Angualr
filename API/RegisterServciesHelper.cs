@@ -4,6 +4,7 @@ using BL.Contracts.Services.Custom;
 using BL.GeneralService.CMS;
 using BL.Mapper;
 using BL.Mapper.Base;
+using BL.Services;
 using BL.Services.Custom;
 using DAL.ApplicationContext;
 using DAL.Contracts.Repositories.Generic;
@@ -180,6 +181,8 @@ namespace API
 
             // Project Services
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
 
             // Register localization and set the resources folder path

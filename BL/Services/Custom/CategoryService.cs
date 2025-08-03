@@ -1,21 +1,21 @@
-﻿//using BL.Contracts.IMapper;
-//using BL.Contracts.Services.Items;
-//using BL.Services.Generic;
-//using DAL.Contracts.Repositories.Generic;
-//using Domains.Entities;
-//using Shared.DTO.Entities;
+﻿using BL.Contracts.IMapper;
+using BL.Contracts.Services.Custom;
+using BL.DTO.Entities;
+using BL.Services.Generic;
+using DAL.Contracts.Repositories.Generic;
+using Domains.Entities.Product;
 
-//namespace BL.Services
-//{
-//    public class CategoryService : BaseService<TbCategory , CategoryDto>, ICategoryService
-//    {
-//        private readonly ITableRepository<TbCategory > _baseTableRepository;
-//        private readonly IBaseMapper _mapper;
-//        public CategoryService(ITableRepository<TbCategory > baseTableRepository, IBaseMapper mapper) : base(baseTableRepository, mapper)
-//        {
-//            _baseTableRepository = baseTableRepository;
-//            _mapper = mapper;
-//        }
-  
-//    }
-//}
+namespace BL.Services
+{
+    public class CategoryService : BaseService<Category, CategoryDTO>, ICategoryService
+    {
+        private readonly ITableRepository<Category> _categoryTableRepository;
+        private readonly IBaseMapper _mapper;
+        public CategoryService(ITableRepository<Category> categoryTableRepository, IBaseMapper mapper) : base(categoryTableRepository, mapper)
+        {
+            _categoryTableRepository = categoryTableRepository;
+            _mapper = mapper;
+        }
+
+    }
+}

@@ -1,21 +1,17 @@
-﻿using Shared.DTOs.Base;
-using System;
-using System.Collections.Generic;
+﻿
+using Resources;
+using Shared.DTOs.Base;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Shared.DTO.Entities
+namespace BL.DTO.Entities
 {
-    public class CategoryDto : BaseDto
+    public class CategoryDTO : BaseDto
     {
-        [Required]
-        [MaxLength(100)]
-        public string TitleAr { get; set; } = null!;
-
-        [Required]
-        [MaxLength(100)]
-        public string TitleEn { get; set; } = null!;
+        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+        [StringLength(100, MinimumLength = 2, ErrorMessageResourceName = "FieldLength", ErrorMessageResourceType = typeof(ValidationResources))]
+        public string Name { get; set; } = null!;
+        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
+        [StringLength(1000, MinimumLength = 10, ErrorMessageResourceName = "DescriptionLength", ErrorMessageResourceType = typeof(ValidationResources))]
+        public string Description { get; set; } = null!;
     }
 }
