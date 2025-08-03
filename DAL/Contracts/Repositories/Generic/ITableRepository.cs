@@ -14,7 +14,7 @@ namespace DAL.Contracts.Repositories.Generic
         public  Task<bool> UpdateAsync(T model, Guid updaterId);
         bool Update(T model, Guid updaterId, out Guid id);
         public Task<bool> UpdateCurrentStateAsync(Guid entityId, Guid userId, int newValue = 0);
-        bool AddRange(IEnumerable<T> entities, Guid userId);
+        public Task<bool> AddRangeAsync(IEnumerable<T> entities, Guid userId);
         public bool SaveRange(IEnumerable<T> entities, Guid userId);
         public bool ResetRange(IEnumerable<T> newEntities, Guid userId, Expression<Func<T, bool>> filterForOldEntities);
         public bool Remove(Guid id);

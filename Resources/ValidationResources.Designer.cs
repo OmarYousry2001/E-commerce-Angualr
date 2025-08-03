@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Resources.Data.Resources {
+namespace Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Resources.Data.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Resources.Data.Resources.ValidationResources", typeof(ValidationResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Resources.ValidationResources", typeof(ValidationResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -345,6 +345,15 @@ namespace Resources.Data.Resources {
         public static string DescriptionEnRequired {
             get {
                 return ResourceManager.GetString("DescriptionEnRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون الوصف بين {2} و {1} حرفًا..
+        /// </summary>
+        public static string DescriptionLength {
+            get {
+                return ResourceManager.GetString("DescriptionLength", resourceCulture);
             }
         }
         

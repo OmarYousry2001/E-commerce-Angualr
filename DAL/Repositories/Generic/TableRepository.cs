@@ -338,7 +338,7 @@ namespace DAL.Repositories.Generic
         /// <summary>
         /// Adds multiple new entities to the database
         /// </summary>
-        public bool AddRange(IEnumerable<T> entities, Guid userId)
+        public async Task<bool> AddRangeAsync(IEnumerable<T> entities, Guid userId)
         {
             try
             {
@@ -352,15 +352,16 @@ namespace DAL.Repositories.Generic
                     entity.CurrentState = 1;
                 }
 
-                DbSet.AddRange(entities);
-                return _dbContext.SaveChanges() > 0;
+                await DbSet.AddRangeAsync(entities);
+                return await _dbContext.SaveChangesAsync() > 0;
             }
             catch (Exception ex)
             {
-                HandleException(nameof(AddRange), $"Error occurred while adding multiple entities of type {typeof(T).Name}.", ex);
+                HandleException(nameof(AddRangeAsync), $"Error occurred while adding multiple entities of type {typeof(T).Name}.", ex);
                 throw;
             }
         }
+
         /// <summary>
         /// Updates multiple existing entities in the database
         /// </summary>

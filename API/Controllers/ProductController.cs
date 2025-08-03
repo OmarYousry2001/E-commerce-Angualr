@@ -1,5 +1,6 @@
 ﻿using API.Base;
 using BL.Contracts.Services.Custom;
+using BL.DTO.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -29,7 +30,26 @@ namespace API.Controllers
             return NewResult(entities);
         }
 
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromForm] ProductDTO product )
+        {
+            var entities = await _ProductService.SaveAndUploadImageAsync(product , GuidUserId);
+            return NewResult(entities);
+        }
 
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromForm]  ProductDTO product)
+        {
+            var entities = await _ProductService.SaveAndUploadImageAsync(product, GuidUserId);
+            return NewResult(entities);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var entities = await _ProductService.DeleteAsync(id , GuidUserId);
+            return NewResult(entities);
+        }
 
     }
 }

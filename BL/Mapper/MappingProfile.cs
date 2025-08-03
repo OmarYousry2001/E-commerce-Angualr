@@ -17,12 +17,15 @@ namespace BL.Mapper
             //CreateMap<VwUserProfile, UserProfileViewDto>().ReverseMap();
 
             #region Product
-            CreateMap<Product, ProductDTO>()
+            CreateMap<Product, GetProductDTO>()
             .ForMember(des => des.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
             .ForMember(des => des.Id, opt => opt.MapFrom(src => src.Id)).ReverseMap();
 
             CreateMap<Photo, PhotoDTO>()
-            .ForMember(des => des.ImageName, opt => opt.MapFrom(src => src.ImagePath)).ReverseMap(); 
+            .ForMember(des => des.ImageName, opt => opt.MapFrom(src => src.ImagePath)).ReverseMap();
+
+            CreateMap<ProductDTO, Product>().ReverseMap();
+            //.ForMember(des => des.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
             #endregion
 
 

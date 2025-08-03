@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Resources;
 using Resources.Data.Resources;
 using System.ComponentModel.DataAnnotations;
 

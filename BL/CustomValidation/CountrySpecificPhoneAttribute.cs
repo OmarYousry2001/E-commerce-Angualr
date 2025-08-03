@@ -1,4 +1,5 @@
-﻿using Resources.Data.Resources;
+﻿using Resources;
+using Resources.Data.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
@@ -16,7 +17,7 @@ namespace Shared.Attributes
             var phone = value as string;
             if (string.IsNullOrWhiteSpace(phone))
             {
-                return new ValidationResult(ValidationResources.RequiredField);
+                return new ValidationResult(Resources.ValidationResources.RequiredField);
             }
             return country?.ToUpperInvariant() switch
             {

@@ -1,6 +1,7 @@
 ﻿using BL.Contracts.GeneralService.CMS;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Resources;
 using Resources.Data.Resources;
 
 namespace BL.GeneralService.CMS
@@ -144,6 +145,45 @@ namespace BL.GeneralService.CMS
 
             return uniqueFileName;
         }
+        public async Task<List<string>> AddImagesAsync(IFormFileCollection files, string featureFolder, string nameEntity, List<string>? oldFileNames = null)
+        {
+            var savedImagePaths = new List<string>();
+            var uploadsFolder = Path.Combine(_env.WebRootPath, _imagesFolder, featureFolder, nameEntity);
+            Directory.CreateDirectory(uploadsFolder);
+
+            var imageProcessor = new ImageProcessingService();
+
+            if (oldFileNames != null)
+            {
+                foreach (var oldFile in oldFileNames)
+                {
+                    var oldFileNameOnly = Path.GetFileName(oldFile);
+                    var oldPath = Path.Combine(uploadsFolder, oldFileNameOnly);
+                    if (File.Exists(oldPath))
+                        File.Delete(oldPath);
+                }
+            }
+
+            foreach (var file in files)
+            {
+                if (file.Length > 0)
+                {
+                    var fileBytes = await GetFileBytesAsync(file);
+                    var processedImage = imageProcessor.ConvertToWebP(fileBytes, quality: 100);
+                    var uniqueFileName = $"{Guid.NewGuid()}.webp";
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    await File.WriteAllBytesAsync(filePath, processedImage);
+
+                    var relativePath = Path.Combine(_imagesFolder, featureFolder, nameEntity, uniqueFileName)
+                                        .Replace("\\", "/");
+                    savedImagePaths.Add(relativePath);
+                }
+            }
+
+            return savedImagePaths;
+        }
+
 
         public bool IsValidFile(IFormFile file)
         {

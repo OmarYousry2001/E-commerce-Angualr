@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BL.Contracts.GeneralService.CMS
 {
     public interface IFileUploadService
     {
+        public  Task<List<string>> AddImagesAsync(IFormFileCollection files, string featureFolder, string nameEntity, List<string>? oldFileNames = null);
         public Task ArchiveFileAsync(string relativePath, string entityName);
         Task<byte[]> GetFileBytesAsync(IFormFile file);
         Task<byte[]> GetFileBytesAsync(string base64String);

@@ -612,4 +612,7 @@
   <data name="FailedToUpdateClaims" xml:space="preserve">
     <value>Failed to update claims</value>
   </data>
+  <data name="DescriptionLength" xml:space="preserve">
+    <value>Description must be between {2} and {1} characters</value>
+  </data>
 </root>

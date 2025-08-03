@@ -612,4 +612,7 @@
   <data name="FailedToUpdateClaims" xml:space="preserve">
     <value>فشل في تحديث الأذونات</value>
   </data>
+  <data name="DescriptionLength" xml:space="preserve">
+    <value>يجب أن يكون الوصف بين {2} و {1} حرفًا.</value>
+  </data>
 </root>
