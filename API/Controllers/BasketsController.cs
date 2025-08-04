@@ -1,11 +1,11 @@
 using API.Base;
 using BL.Contracts.GeneralService.CMS;
+using Domains.AppMetaData;
 using Domains.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class BasketsController : AppControllerBase
     {
@@ -16,21 +16,21 @@ namespace API.Controllers
             _customerBasketService = customerBasketService;
         }
 
-        [HttpGet("get-basket-item/{id}")]
+        [HttpGet(Router.BasketRouting.Get)]
         public async Task<IActionResult> Get(string id)
         {
             var entities = await _customerBasketService.GetBasketAsync(id);
             return NewResult(entities);
         }
 
-        [HttpPost("update-basket")]
-        public async Task<IActionResult> Add(CustomerBasket basket)
+        [HttpPost(Router.BasketRouting.Update)]
+        public async Task<IActionResult> Update(CustomerBasket basket)
         {
             var entity = await _customerBasketService.UpdateBasketAsync(basket);
             return NewResult(entity);
         }
 
-        [HttpDelete("delete-basket-item/{id}")]
+        [HttpDelete(Router.BasketRouting.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             var result = await _customerBasketService.DeleteBasketAsync(id);

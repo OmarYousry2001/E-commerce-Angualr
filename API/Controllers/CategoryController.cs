@@ -1,11 +1,11 @@
 using API.Base;
 using BL.Contracts.Services.Custom;
 using BL.DTO.Entities;
+using Domains.AppMetaData;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : AppControllerBase
     {
@@ -16,35 +16,35 @@ namespace API.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet("Product-Get-All")]
+        [HttpGet(Router.CategoryRouting.GetAll)]
         public async Task<IActionResult> GetAll()
         {
             var entities = await _categoryService.GetAllAsync();
             return NewResult(entities);
         }
 
-        [HttpGet("product/{id}")]
+        [HttpGet(Router.CategoryRouting.GetById)]
         public async Task<IActionResult> GetById(Guid id)
         {
             var entities = await _categoryService.FindByIdAsync(id);
             return NewResult(entities);
         }
 
-        [HttpPost("Create")]
+        [HttpPost(Router.CategoryRouting.Create)]
         public async Task<IActionResult> Create( CategoryDTO product)
         {
             var entities = await _categoryService.SaveAsync(product, GuidUserId);
             return NewResult(entities);
         }
 
-        [HttpPut("Update")]
+        [HttpPut(Router.CategoryRouting.Update)]
         public async Task<IActionResult> Update( CategoryDTO product)
         {
             var entities = await _categoryService.SaveAsync(product, GuidUserId);
             return NewResult(entities);
         }
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete(Router.CategoryRouting.Delete)]
         public async Task<IActionResult> Update(Guid id)
         {
             var entities = await _categoryService.DeleteAsync(id, GuidUserId);

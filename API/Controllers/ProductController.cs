@@ -1,11 +1,11 @@
 ﻿using API.Base;
 using BL.Contracts.Services.Custom;
 using BL.DTO.Entities;
+using Domains.AppMetaData;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class ProductController : AppControllerBase
     {
@@ -16,36 +16,36 @@ namespace API.Controllers
             _ProductService = ProductService;
         }
 
-        [HttpGet("Product-Get-All")]
+        [HttpGet(Router.ProductRouting.GetAll)]
         public async Task<IActionResult> GetAll()
         {
             var entities = await _ProductService.GetAllAsync();
             return NewResult(entities);
         }
 
-        [HttpGet("product/{id}")]
+        [HttpGet(Router.ProductRouting.GetById)]
         public async Task<IActionResult> GetById(Guid id)
         {
             var entities = await _ProductService.FindByIdAsync(id);
             return NewResult(entities);
         }
 
-        [HttpPost("Create")]
+        [HttpPost(Router.ProductRouting.Create)]
         public async Task<IActionResult> Create([FromForm] ProductDTO product )
         {
             var entities = await _ProductService.SaveAndUploadImageAsync(product , GuidUserId);
             return NewResult(entities);
         }
 
-        [HttpPut("Update")]
+        [HttpPut(Router.ProductRouting.Update)]
         public async Task<IActionResult> Update([FromForm]  ProductDTO product)
         {
             var entities = await _ProductService.SaveAndUploadImageAsync(product, GuidUserId);
             return NewResult(entities);
         }
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Update(Guid id)
+        [HttpDelete(Router.ProductRouting.Delete)]
+        public async Task<IActionResult> Delete(Guid id)
         {
             var entities = await _ProductService.DeleteAsync(id , GuidUserId);
             return NewResult(entities);
