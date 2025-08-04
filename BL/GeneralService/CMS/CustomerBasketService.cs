@@ -9,9 +9,9 @@ namespace BL.GeneralService.CMS
     public class CustomerBasketService : ResponseHandler, ICustomerBasketService
     {
         private readonly IDatabase _database;
-        public CustomerBasketService(IConnectionMultiplexer redis)
+        public CustomerBasketService(IConnectionMultiplexer radius)
         {
-            _database = redis.GetDatabase();
+            _database = radius.GetDatabase();
         }
         public async Task<Response<bool>> DeleteBasketAsync(string id)
         {
