@@ -10,20 +10,21 @@
 		<ProjectReference Include="..\Domains\Domains.csproj" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.6" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6"/>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6"/>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6" />
 		<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.58" />
 		<PackageReference Include="Serilog.Sinks.MSSqlServer" Version="8.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Contracts\Repositories\Custom\" />
-		<Folder Include="Repositories\Custom\" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+	  <Folder Include="Contracts\Repositories\Custom\" />
+	  <Folder Include="Repositories\Custom\" />
 	</ItemGroup>
 
 </Project>

@@ -11,7 +11,6 @@ using DAL.Contracts.Repositories.Generic;
 using DAL.Contracts.UnitOfWork;
 using DAL.Repositories.Generic;
 using DAL.UnitOfWork;
-using Domains.Entities.Identity;
 using Domains.Helpers;
 using Domains.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,8 +22,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System.Reflection;
+using StackExchange.Redis;
 using System.Text;
+using Role = Domains.Entities.Identity.Role;
 
 
 
@@ -152,6 +152,14 @@ namespace API
             #endregion
 
 
+            #region Apply Redis Connection
+            builder.Services.AddSingleton<IConnectionMultiplexer>(i =>
+           {
+               var config = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("redis"));
+               return ConnectionMultiplexer.Connect(config);
+           }); 
+            #endregion
+
             // Register Auto Mapper
             //builder.Services.AddAutoMapper(typeof(Program)); // Assuming 'Program' contains AutoMapper profiles
             //builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
@@ -176,6 +184,7 @@ namespace API
             builder.Services.AddScoped<IFileUploadService, FileUploadService>();
             builder.Services.AddScoped<ICacheService, CacheService>();
             builder.Services.AddScoped<IImageProcessingService, ImageProcessingService>();
+            builder.Services.AddScoped<ICustomerBasketService, CustomerBasketService>();
             //builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             //builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
