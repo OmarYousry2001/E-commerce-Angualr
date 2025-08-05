@@ -1060,6 +1060,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to كلمة المرور يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص، وألا تقل عن 6 أحرف.
+        /// </summary>
+        public static string PasswordComplexity {
+            get {
+                return ResourceManager.GetString("PasswordComplexity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to المسار لا يمكن أن يتجاوز 500 حرف..
         /// </summary>
         public static string PathMaxLength {

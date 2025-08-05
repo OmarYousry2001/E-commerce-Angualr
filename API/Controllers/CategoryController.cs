@@ -26,29 +26,26 @@ namespace API.Controllers
         [HttpGet(Router.CategoryRouting.GetById)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var entities = await _categoryService.FindByIdAsync(id);
-            return NewResult(entities);
+            var entity = await _categoryService.FindByIdAsync(id);
+            return NewResult(entity);
         }
 
         [HttpPost(Router.CategoryRouting.Create)]
         public async Task<IActionResult> Create( CategoryDTO product)
         {
-            var entities = await _categoryService.SaveAsync(product, GuidUserId);
-            return NewResult(entities);
+            return NewResult(await _categoryService.SaveAsync(product, GuidUserId));
         }
 
         [HttpPut(Router.CategoryRouting.Update)]
         public async Task<IActionResult> Update( CategoryDTO product)
         {
-            var entities = await _categoryService.SaveAsync(product, GuidUserId);
-            return NewResult(entities);
+            return NewResult(await _categoryService.SaveAsync(product, GuidUserId));
         }
 
         [HttpDelete(Router.CategoryRouting.Delete)]
         public async Task<IActionResult> Update(Guid id)
         {
-            var entities = await _categoryService.DeleteAsync(id, GuidUserId);
-            return NewResult(entities);
+            return NewResult(await _categoryService.DeleteAsync(id, GuidUserId));
         }
 
     }

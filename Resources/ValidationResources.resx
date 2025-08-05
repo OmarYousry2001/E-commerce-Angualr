@@ -615,4 +615,7 @@
   <data name="DescriptionLength" xml:space="preserve">
     <value>يجب أن يكون الوصف بين {2} و {1} حرفًا.</value>
   </data>
+  <data name="PasswordComplexity" xml:space="preserve">
+    <value>كلمة المرور يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز خاص، وألا تقل عن 6 أحرف</value>
+  </data>
 </root>

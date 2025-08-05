@@ -58,14 +58,12 @@
             public const string Edit = Prefix + "Edit";
             public const string Delete = Prefix + SingleRoute;
         }
-        public static class UserRouting
+        public static class ApplicationUserRouting
         {
             public const string Prefix = Rule + "User/";
-
-            public const string list = Prefix + "List";
+            public const string Register = Rule + "Register";
+            public const string GetAll = Prefix + "GetAll";
             public const string GetById = Prefix + SingleRoute;
-
-
             public const string Create = Prefix + "Create";
             public const string Edit = Prefix + "Edit";
             public const string ChangePassword = Prefix + "ChangePassword";
@@ -140,16 +138,17 @@
             public const string GetDepartmentStudentsCountById = Prefix + "/Department-Students-Count-ById/{id}";
 
         }
-        public static class ApplicationUserRouting
-        {
-            public const string Prefix = Rule + "User";
-            public const string Create = Prefix + "/Create";
-            public const string Paginated = Prefix + "/Paginated";
-            public const string GetByID = Prefix + SingleRoute;
-            public const string Edit = Prefix + "/Edit";
-            public const string Delete = Prefix + "/{id}";
-            public const string ChangePassword = Prefix + "/Change-Password";
-        }
+        //public static class ApplicationUserRouting
+        //{
+        //    public const string Prefix = Rule + "User";
+        //    public const string Register = Rule + "Register";
+        //    public const string Create = Prefix + "/Create";
+        //    public const string Paginated = Prefix + "/Paginated";
+        //    public const string GetByID = Prefix + SingleRoute;
+        //    public const string Edit = Prefix + "/Edit";
+        //    public const string Delete = Prefix + "/{id}";
+        //    public const string ChangePassword = Prefix + "/Change-Password";
+        //}
         public static class Authentication
         {
             public const string Prefix = Rule + "Authentication";
@@ -181,12 +180,6 @@
         {
             public const string Prefix = Rule + "EmailsRoute";
             public const string SendEmail = Prefix + "/SendEmail";
-        }
-        public static class InstructorRouting
-        {
-            public const string Prefix = Rule + "InstructorRouting";
-            public const string GetSalarySummationOfInstructor = Prefix + "/Salary-Summation-Of-Instructor";
-            public const string AddInstructor = Prefix + "/Create";
         }
 
 

@@ -1,4 +1,5 @@
 ﻿
+using Domains.Entities;
 using Domains.Entities.Identity;
 using Domains.Entities.Product;
 using Domains.Identity;
@@ -10,15 +11,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.ApplicationContext
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser , Role, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser , Domains.Entities.Identity.Role, string>
     {
         private readonly IEncryptionProvider _encryptionProvider;
 
         public DbSet<Category> Category { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<Photo> Photo { get; set; }
+        public  DbSet<Address> Address { get; set; }
         public DbSet<Rating> Rating { get; set; }
         public DbSet<UserRefreshToken> UserRefreshToken { get; set; }
+
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

@@ -12,13 +12,13 @@ namespace BL.Contracts.GeneralService.CMS
         Task<AuthenticatedUserResult> GetAuthenticatedUserAsync(string email, string password);
         Task<BaseResult> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
         Task<bool> IsUserAuthorizedAsync(ApplicationUser user, string policy);
-        public Task<BaseResult<string>> LoginUserAsync(LoginDto loginDto);
+        public Task<BaseResult<string>> LoginUserAsync(LoginDTO loginDto);
         Task<SignInResult> PasswordSignInAsync(string email, string password, bool isPersistent, bool lockoutOnFailure);
         Task<BaseResult> ResetPasswordAsync(PasswordResetDto resetDto);
         public  Task<IList<string>> GetClaimsByEmailAsync(string email);
         public  Task<bool> IsEmailConfirmedAsync(ApplicationUser user);
         public  Task<IList<string>> GetRolesByIdlAsync(string id);
-        public  Task<LoginDto> GetUserByEmailAsync(string email);
+        public  Task<LoginDTO> GetUserByEmailAsync(string email);
         Task SignOutAsync();
     }
 }

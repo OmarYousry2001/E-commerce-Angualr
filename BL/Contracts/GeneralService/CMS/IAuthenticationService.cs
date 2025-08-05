@@ -10,7 +10,7 @@ namespace BL.Abstracts
 {
     public interface IAuthenticationService
     {
-        public Task<Response<JwtAuthTokenResponse>> LoginUserAsync(LoginDto loginDto);
+        public Task<Response<JwtAuthTokenResponse>> LoginUserAsync(LoginDTO loginDto);
         Task<JwtAuthTokenResponse> GetJwtTokenAsync(ApplicationUser user);
         JwtSecurityToken ReadJwtToken(string accessToken);
         Task<string>? ValidateBeforeRenewTokenAsync(JwtSecurityToken jwtToken, string accessToken, string refreshToken);

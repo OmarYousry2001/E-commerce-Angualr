@@ -1,6 +1,6 @@
 ﻿namespace Shared.DTOs.Base
 {
-    public class BaseDto
+    public class BaseDTO
     {
         public Guid Id { get; set; }
     }

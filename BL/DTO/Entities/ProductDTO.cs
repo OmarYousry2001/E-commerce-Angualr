@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BL.DTO.Entities
 {
-    public class ProductDTO : BaseDto
+    public class ProductDTO : BaseDTO
     {
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(100, MinimumLength = 2, ErrorMessageResourceName = "FieldLength", ErrorMessageResourceType = typeof(ValidationResources))]
@@ -28,7 +28,7 @@ namespace BL.DTO.Entities
         public IFormFileCollection? Photo { get; set; }
 
     }
-    public class GetProductDTO : BaseDto
+    public class GetProductDTO : BaseDTO
     {
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;

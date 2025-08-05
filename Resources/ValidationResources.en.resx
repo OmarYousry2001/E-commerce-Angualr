@@ -615,4 +615,7 @@
   <data name="DescriptionLength" xml:space="preserve">
     <value>Description must be between {2} and {1} characters</value>
   </data>
+  <data name="PasswordComplexity" xml:space="preserve">
+    <value>The password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 6 characters long</value>
+  </data>
 </root>

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Shared.DTO.Entities
 {
-    public class BookDto : BaseDto
+    public class BookDto : BaseDTO
     {
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]
         [StringLength(100, MinimumLength = 2, ErrorMessageResourceName = "FieldLength", ErrorMessageResourceType = typeof(ValidationResources))]

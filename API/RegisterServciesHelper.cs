@@ -1,4 +1,5 @@
-﻿using BL.Contracts.GeneralService.CMS;
+﻿using BL.Abstracts;
+using BL.Contracts.GeneralService.CMS;
 using BL.Contracts.IMapper;
 using BL.Contracts.Services.Custom;
 using BL.GeneralService.CMS;
@@ -16,6 +17,9 @@ using Domains.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +38,6 @@ namespace API
     {
         public static void RegisteredServices(WebApplicationBuilder builder )
         {
-     
             #region Connection To SQL Server
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
              builder.Configuration.GetConnectionString("DefaultConnection"))); 
@@ -151,6 +154,22 @@ namespace API
 
             #endregion
 
+            #region UrlHelper
+            builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            builder.Services.AddTransient<IUrlHelper>(x =>
+            {
+                var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+                var factory = x.GetRequiredService<IUrlHelperFactory>();
+                return factory.GetUrlHelper(actionContext);
+            });
+            #endregion
+
+            #region Emails Settings
+            var emailSettings = new EmailSettings();
+            builder.Configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
+            builder.Services.AddSingleton(emailSettings);
+            #endregion
+
 
             #region Apply Redis Connection
             builder.Services.AddSingleton<IConnectionMultiplexer>(i =>
@@ -180,11 +199,15 @@ namespace API
             // CMS
             //builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
             //builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+            builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IUserTokenService, UserTokenService>();
             builder.Services.AddScoped<IFileUploadService, FileUploadService>();
             builder.Services.AddScoped<ICacheService, CacheService>();
             builder.Services.AddScoped<IImageProcessingService, ImageProcessingService>();
             builder.Services.AddScoped<ICustomerBasketService, CustomerBasketService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+
             //builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             //builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
@@ -192,10 +215,6 @@ namespace API
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
 
-
-
-            // Register localization and set the resources folder path
-            //builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             // add memory cache
             builder.Services.AddMemoryCache();

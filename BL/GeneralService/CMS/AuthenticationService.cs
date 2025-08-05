@@ -231,7 +231,7 @@ namespace BL.GeneralService.CMS
             return await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
         }
 
-        public  async  Task<Response<JwtAuthTokenResponse>> LoginUserAsync(LoginDto loginDto)
+        public  async  Task<Response<JwtAuthTokenResponse>> LoginUserAsync(LoginDTO loginDto)
         {
             //Check if user Exist by Username
             var user = await _userService.FindByEmailAsync(loginDto.Email);

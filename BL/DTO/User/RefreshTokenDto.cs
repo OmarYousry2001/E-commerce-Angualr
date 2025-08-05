@@ -2,7 +2,7 @@
 
 namespace Shared.DTOs.User
 {
-    public class RefreshTokenDto : BaseDto    
+    public class RefreshTokenDto : BaseDTO
     {
         public string Email { get; set; } = null!;
         public string Token { get; set; } = null!;
