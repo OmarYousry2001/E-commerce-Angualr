@@ -1,12 +1,12 @@
 ﻿using API.Base;
 using BL.Abstracts;
+using BL.DTO.User;
 using Domains.AppMetaData;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.User;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class ApplicationUserController : AppControllerBase
     {
@@ -24,11 +24,30 @@ namespace API.Controllers
             return NewResult(result);
 
         }
+
+
+        // After user Register 
         [HttpGet(Router.ApplicationUserRouting.ConfirmEmail)]
-        // Remmber With Angular  Set http verb To HttpPost
+        // Remember With Angular  Set http verb To HttpPost
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             var result = await _applicationUserService.ConfirmUserEmail(userId , code);
+            return NewResult(result);
+        }
+
+
+        [HttpPost(Router.ApplicationUserRouting.SendResetPassword)]
+        public async Task<IActionResult> SendResetPassword(string email)
+        {
+            var result = await _applicationUserService.SendResetUserPasswordCode(email);
+            return NewResult(result);
+        }
+
+        [HttpPost(Router.ApplicationUserRouting.ResetPassword)]
+        public async Task<IActionResult> ResetPassword(RestPasswordDTO restPasswordDTO)
+        {
+            var result = await _applicationUserService.ResetPassword(restPasswordDTO);
+
             return NewResult(result);
         }
 

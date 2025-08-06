@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTOs.User
 {
-    public class LoginDTO : BaseDTO
+    public class LoginDTO
     {
 
         [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(ValidationResources))]

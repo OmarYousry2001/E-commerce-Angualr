@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Resources;
-using Resources.Data.Resources;
 using Shared.DTOs.User;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -44,9 +43,10 @@ namespace BL.GeneralService.CMS
 
         #region Actions
 
-        public async Task<JwtAuthTokenResponse> GetJwtTokenAsync(ApplicationUser user)
+
+        public async Task<JwtAuthTokenResponse> GetJwtTokenAsync(ApplicationUser user, bool rememberMe)
         {
-            var jwtToken = await GenerateJwtSecurityTokenAsync(user);
+            var jwtToken = await GenerateJwtSecurityTokenAsync(user, rememberMe);
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
@@ -60,7 +60,7 @@ namespace BL.GeneralService.CMS
                 RefreshToken = refreshTokenForResponse
             };
         }
-        private async Task<JwtSecurityToken> GenerateJwtSecurityTokenAsync(ApplicationUser user)
+        private async Task<JwtSecurityToken> GenerateJwtSecurityTokenAsync(ApplicationUser user, bool rememberMe =false)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             var userClaims = await GetClaims(user, userRoles.ToList());
@@ -69,23 +69,64 @@ namespace BL.GeneralService.CMS
 
             var signingCred = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
 
+            var tokenExpiry = rememberMe
+                ? DateTime.UtcNow.AddDays(7)
+                : DateTime.UtcNow.AddMinutes(_jwtSettings.accessTokenExpireDateInMinutes);
+
             var jwtToken = new JwtSecurityToken
             (
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: userClaims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.accessTokenExpireDateInMinutes),
+                expires: tokenExpiry,
                 signingCredentials: signingCred
             );
             return jwtToken;
         }
+
+        //public async Task<JwtAuthTokenResponse> GetJwtTokenAsync(ApplicationUser user )
+        //{
+        //    var jwtToken = await GenerateJwtSecurityTokenAsync(user );
+
+        //    var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+
+        //    var savedUserRefreshToken = await SaveUserRefreshTokenAsync(user, accessToken, jwtToken.Id);
+
+        //    var refreshTokenForResponse = GetRefreshTokenForResponse(savedUserRefreshToken.ExpiryDate, user.UserName, savedUserRefreshToken.RefreshToken);
+
+        //    return new JwtAuthTokenResponse()
+        //    {
+        //        AccessToken = accessToken,
+        //        RefreshToken = refreshTokenForResponse
+        //    };
+        //}
+        //private async Task<JwtSecurityToken> GenerateJwtSecurityTokenAsync(ApplicationUser user)
+        //{
+        //    var userRoles = await _userManager.GetRolesAsync(user);
+        //    var userClaims = await GetClaims(user, userRoles.ToList());
+
+        //    var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret));
+
+        //    var signingCred = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+
+        //    var jwtToken = new JwtSecurityToken
+        //    (
+        //        issuer: _jwtSettings.Issuer,
+        //        audience: _jwtSettings.Audience,
+        //        claims: userClaims,
+        //        expires: DateTime.UtcNow.AddMinutes(_jwtSettings.accessTokenExpireDateInMinutes),
+        //        signingCredentials: signingCred
+        //    );
+        //    return jwtToken;
+        //}
         private async Task<IEnumerable<Claim>> GetClaims(ApplicationUser user, List<string> userRoles)
         {
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier,user.Id),
                 new Claim(ClaimTypes.Name,user.UserName),
-               new Claim(nameof(UserClaimModel.PhoneNumber), user.PhoneNumber),
+               //new Claim(nameof(UserClaimModel.PhoneNumber), user.PhoneNumber),
                 new Claim(ClaimTypes.Email,user.Email),
             };
             foreach (var role in userRoles)
@@ -231,7 +272,7 @@ namespace BL.GeneralService.CMS
             return await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
         }
 
-        public  async  Task<Response<JwtAuthTokenResponse>> LoginUserAsync(LoginDTO loginDto)
+        public async Task<Response<JwtAuthTokenResponse>> LoginAsync(LoginDTO loginDto)
         {
             //Check if user Exist by Username
             var user = await _userService.FindByEmailAsync(loginDto.Email);
@@ -249,15 +290,16 @@ namespace BL.GeneralService.CMS
                 return BadRequest<JwtAuthTokenResponse>(UserResources.User_EmailNotConfirmed);
             }
             //Generate JWTAuthToken
-            var response = await GetJwtTokenAsync(user);
+            var response = await GetJwtTokenAsync(user , loginDto.RememberMe);
+            //var response = await GetJwtTokenAsync(user, loginDto.RememberMe);
 
             //return token
             return Success(response);
         }
-
-        public async Task SignOutAsync()
+        public async Task<Response<bool>> SignOutAsync()
         {
-            await _signInManager.SignOutAsync();
+           await _signInManager.SignOutAsync();
+            return Success(true);
         }
 
         #endregion

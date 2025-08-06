@@ -1,4 +1,5 @@
 ﻿
+using BL.DTO.User;
 using BL.GenericResponse;
 using Domains.Identity;
 using Shared.DTOs.User;
@@ -19,8 +20,8 @@ namespace BL.Abstracts
         Task<string> UpdateAsync(ApplicationUser user);
         public Task<string> ChangePasswordAsync(ApplicationUser user, string oldPassword, string confirmPassword);
 
-        Task<string> SendResetUserPasswordCode(string email);
-        Task<string> ConfirmResetPasswordCodeAsyn(string Code, string Email);
+        public Task<Response<string>> SendResetUserPasswordCode(string email);
+        Task<string> ConfirmResetPasswordCodeAsync(string Code, string Email);
         Task<string> ResetPassword(string ResetCode, string newPassword);
         IQueryable<ApplicationUser> GetAllUsersQueryable();
         Task<ApplicationUser?> FindByNameAsync(string userName);
@@ -28,6 +29,7 @@ namespace BL.Abstracts
         //
         Task<IList<ApplicationUser>> GetUsersInRoleAsync(string role);
         public Task<Response<RegisterDTO>> RegisterAsync(RegisterDTO user);
+        public  Task<Response<string>> ResetPassword(RestPasswordDTO restPassword);
 
     }
 }

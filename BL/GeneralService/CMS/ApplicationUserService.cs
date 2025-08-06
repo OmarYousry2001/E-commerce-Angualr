@@ -1,4 +1,5 @@
 ﻿using BL.Abstracts;
+using BL.DTO.User;
 using BL.GenericResponse;
 using DAL.ApplicationContext;
 using DAL.Contracts.UnitOfWork;
@@ -175,14 +176,14 @@ namespace BL.GeneralService.CMS
                 return isPasswordChanged.Errors.FirstOrDefault()?.Description ?? "An error occurred while changing the password";
 
         }
-        public async Task<string> SendResetUserPasswordCode(string email)
+        public async Task<Response<string>> SendResetUserPasswordCode(string email)
         {
             await using var transaction = await _applicationDBContext.Database.BeginTransactionAsync();
             try
             {
                 //Get User
                 var user = await FindByEmailAsync(email);
-                if (user == null) return "UserNotFound";
+                if (user == null) return NotFound<string>(UserResources.UserNotFound);
 
                 //Generate Random Code & insert it in User Row
                 var randomCode = new Random().Next(0, 1000000).ToString("D6");
@@ -191,7 +192,7 @@ namespace BL.GeneralService.CMS
                 if (!identityResult.Succeeded)
                 {
                     transaction.Rollback();
-                    return "ErrorInUpdateUser";
+                    return BadRequest<string>(UserResources.ErrorInUpdateUser) ;
                 }
 
                 var userFullName = user.DisplayName;
@@ -200,16 +201,16 @@ namespace BL.GeneralService.CMS
 
                 await _emailsService.SendEmail(email, userFullName, message, "Reset Cinema App Password");
                 await transaction.CommitAsync();
-                return "Success";
+                return Success(NotifiAndAlertsResources.Success); 
 
             }
             catch (Exception)
             {
                 transaction.Rollback();
-                return "Failed";
+                return BadRequest<string>();
             }
         }
-        public async Task<string> ConfirmResetPasswordCodeAsyn(string email, string code)
+        public async Task<string> ConfirmResetPasswordCodeAsync(string email, string code)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -295,29 +296,32 @@ namespace BL.GeneralService.CMS
 
 
         }
-        //public async Task<ApplicationUserDTO> Register(ApplicationUser user, string password)
-        //{
-        //    var user = _mapper.Map<ApplicationUser>(request);
-        //    try
-        //    {
-        //        user = await _userService.CreateUser(user, user.Password);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest<FindUserByIdResponse>(ex.Message);
-        //    }
 
-        //    var userMappedIntoResponse = new FindUserByIdResponse
-        //    {
-        //        FullName = user.FullName,
-        //        Email = user.Email,
-        //        PhoneNumber = user.PhoneNumber,
-        //        UserName = user.UserName
-        //    };
+        public async Task<Response<string>> ResetPassword(RestPasswordDTO restPassword)
+        {
+            var findUser = await _userManager.FindByEmailAsync(restPassword.Email);
+            if (findUser is null)
+            {
+                return NotFound<string>();
+            }
 
-        //    return Created(userMappedIntoResponse);
+            if (findUser.Code != HashCode(restPassword.Code))
+                return BadRequest<string>("Invalid or expired code");
 
-        //}
+            var removeResult = await _userManager.RemovePasswordAsync(findUser);
+            if (!removeResult.Succeeded)
+                return BadRequest<string>("Error removing old password");
+
+            var addResult = await _userManager.AddPasswordAsync(findUser, restPassword.Password);
+            if (!addResult.Succeeded)
+                return BadRequest<string>(addResult.Errors.First().Description);
+
+            findUser.Code = null;
+            await _userManager.UpdateAsync(findUser);
+
+            return Success("Password reset successfully");
+        }
+
         #endregion
     }
 }

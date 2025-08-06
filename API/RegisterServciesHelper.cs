@@ -70,6 +70,36 @@ namespace API
             #endregion
 
             #region JWT Authentication
+            //var jwtSettings = new JwtSettings();
+            //builder.Configuration.GetSection(nameof(jwtSettings)).Bind(jwtSettings);
+            //builder.Services.AddSingleton(jwtSettings);
+
+            //builder.Services.AddAuthentication(x =>
+            //{
+            //    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+            //})
+            //.AddJwtBearer(x =>
+            //{
+            //    x.RequireHttpsMetadata = false;
+            //    x.SaveToken = true;
+            //    x.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = jwtSettings.ValidateIssuer,
+            //        ValidIssuers = new[] { jwtSettings.Issuer },
+            //        ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey,
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+            //        ValidAudience = jwtSettings.Audience,
+            //        ValidateAudience = jwtSettings.ValidateAudience,
+            //        ValidateLifetime = jwtSettings.ValidateLifeTime,
+            //    };
+            //});
+            #endregion
+
+            #region JWT Authentication For Anular
+
             var jwtSettings = new JwtSettings();
             builder.Configuration.GetSection(nameof(jwtSettings)).Bind(jwtSettings);
             builder.Services.AddSingleton(jwtSettings);
@@ -78,9 +108,16 @@ namespace API
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
-            })
+                //Here option For Cookie Authentication
+            }).AddCookie(x =>
+                    {
+                        x.Cookie.Name = "token";
+                        x.Events.OnRedirectToLogin = context =>
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            return Task.CompletedTask;
+                        };
+                    })
             .AddJwtBearer(x =>
             {
                 x.RequireHttpsMetadata = false;
@@ -95,7 +132,27 @@ namespace API
                     ValidateAudience = jwtSettings.ValidateAudience,
                     ValidateLifetime = jwtSettings.ValidateLifeTime,
                 };
+                x.Events = new JwtBearerEvents
+                {
+
+                    OnMessageReceived = context =>
+                    {
+                        var token = context.Request.Cookies["token"];
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    }
+                };
             });
+
             #endregion
 
             #region Configure Serilog

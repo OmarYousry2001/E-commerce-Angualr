@@ -294,4 +294,7 @@
   <data name="InvalidAccessToken" xml:space="preserve">
     <value>Invalid access token</value>
   </data>
+  <data name="ErrorInUpdateUser" xml:space="preserve">
+    <value>Error occurred while updating the user</value>
+  </data>
 </root>

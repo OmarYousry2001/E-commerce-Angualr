@@ -115,6 +115,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to حدث خطأ أثناء تحديث المستخدم.
+        /// </summary>
+        public static string ErrorInUpdateUser {
+            get {
+                return ResourceManager.GetString("ErrorInUpdateUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to كان من المتوقع أن يكون المستخدم مثيلًا..
         /// </summary>
         public static string Expected_UserInstance {
