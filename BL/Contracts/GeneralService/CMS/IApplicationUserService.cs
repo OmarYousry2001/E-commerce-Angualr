@@ -1,4 +1,4 @@
-﻿
+﻿using BL.DTO.Entities;
 using BL.DTO.User;
 using BL.GenericResponse;
 using Domains.Identity;
@@ -30,6 +30,11 @@ namespace BL.Abstracts
         Task<IList<ApplicationUser>> GetUsersInRoleAsync(string role);
         public Task<Response<RegisterDTO>> RegisterAsync(RegisterDTO user);
         public  Task<Response<string>> ResetPassword(RestPasswordDTO restPassword);
+
+        #region This Service For that Project Onlly
+        public Task<Response<bool>> UpdateAddressAsync(string userId, ShipAddressDTO addressDto);
+        public  Task<Response<ShipAddressDTO>> GetUserAddressAsync(string userId);
+        #endregion
 
     }
 }

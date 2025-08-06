@@ -271,6 +271,8 @@ namespace API
             // Project Services
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IAddressService, AddressService>();
+
 
 
             // add memory cache

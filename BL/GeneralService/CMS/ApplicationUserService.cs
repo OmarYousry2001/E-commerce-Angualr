@@ -1,9 +1,12 @@
 ﻿using BL.Abstracts;
+using BL.Contracts.Services.Custom;
+using BL.DTO.Entities;
 using BL.DTO.User;
 using BL.GenericResponse;
 using DAL.ApplicationContext;
 using DAL.Contracts.UnitOfWork;
 using Domains.AppMetaData;
+using Domains.Entities;
 using Domains.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +19,7 @@ using System.Text;
 
 namespace BL.GeneralService.CMS
 {
-    public class ApplicationUserService : ResponseHandler,  IApplicationUserService
+    public class ApplicationUserService : ResponseHandler, IApplicationUserService
     {
         #region Fields
         private readonly UserManager<ApplicationUser> _userManager;
@@ -26,6 +29,9 @@ namespace BL.GeneralService.CMS
         private readonly IUrlHelper _urlHelper;
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly IAddressService _addressService;
+
+
         #endregion
         #region Constructors
         public ApplicationUserService(UserManager<ApplicationUser> userManager,
@@ -33,7 +39,8 @@ namespace BL.GeneralService.CMS
                                       IEmailService emailsService,
                                       ApplicationDbContext applicationDBContext,
                                       IUrlHelper urlHelper,
-                                      IUnitOfWork unitOfWork)
+                                      IUnitOfWork unitOfWork,
+                                      IAddressService addressService)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -41,10 +48,11 @@ namespace BL.GeneralService.CMS
             _applicationDBContext = applicationDBContext;
             _urlHelper = urlHelper;
             _unitOfWork = unitOfWork;
+            _addressService = addressService;
         }
         #endregion
         #region Handle Functions
-  
+
         public async Task<ApplicationUser> CreateUser(ApplicationUser user, string password)
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync();
@@ -108,6 +116,7 @@ namespace BL.GeneralService.CMS
             var message = $"<!DOCTYPE html>\r\n<html>\r\n  <head></head>\r\n  <body style=\"font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; margin: 0; padding: 0;\">\r\n    <div style=\"max-width: 600px; margin: 20px auto; background: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;\">\r\n      <div style=\"background: #4caf50; color: #ffffff; text-align: center; padding: 20px;\">\r\n        <h2 style=\"margin: 0;\">Confirm Your Email</h2>\r\n      </div>\r\n      <div style=\"padding: 20px; text-align: left;\">\r\n        <h1 style=\"font-size: 24px; color: #4caf50; margin: 0;\">Hello, {userFullName}!</h1>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          Thank you for registering with us. Please confirm your email address to complete your registration and start using our services.\r\n        </p>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">Click the button below to confirm your email address:</p>\r\n        <a href='{returnURL}' style=\"display: inline-block; padding: 10px 20px; margin-top: 20px; background: #4caf50; color: #ffffff; text-decoration: none; border-radius: 4px; font-size: 16px;\">Confirm Email</a>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          If the button above doesn't work, you can copy and paste the following link into your browser:\r\n        </p>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\"><a href='{returnURL}' style=\"color: #4caf50; text-decoration: underline;\">[Confirmation Link]</a></p>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          If you didn't create an account with us, please ignore this email.\r\n        </p>\r\n      </div>\r\n      <div style=\"background: #f1f1f1; text-align: center; padding: 10px; font-size: 12px; color: #555;\">\r\n        <p style=\"margin: 0;\">&copy; 2025 Cinema App. All rights reserved.</p>\r\n      </div>\r\n    </div>\r\n  </body>\r\n</html>";
             await _emailsService.SendEmail(user.Email, userFullName, message, "Confirm Email");
         }
+
         public async Task<Response<string>> ConfirmUserEmail(string userId, string code)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -123,7 +132,6 @@ namespace BL.GeneralService.CMS
 
             return Success(NotifiAndAlertsResources.EmailConfirmed);
         }
-
         public async Task<ApplicationUser?> FindByIdAsync(string userId)
         {
             return await _userManager.FindByIdAsync(userId);
@@ -192,7 +200,7 @@ namespace BL.GeneralService.CMS
                 if (!identityResult.Succeeded)
                 {
                     transaction.Rollback();
-                    return BadRequest<string>(UserResources.ErrorInUpdateUser) ;
+                    return BadRequest<string>(UserResources.ErrorInUpdateUser);
                 }
 
                 var userFullName = user.DisplayName;
@@ -201,7 +209,7 @@ namespace BL.GeneralService.CMS
 
                 await _emailsService.SendEmail(email, userFullName, message, "Reset Cinema App Password");
                 await transaction.CommitAsync();
-                return Success(NotifiAndAlertsResources.Success); 
+                return Success(NotifiAndAlertsResources.Success);
 
             }
             catch (Exception)
@@ -297,6 +305,8 @@ namespace BL.GeneralService.CMS
 
         }
 
+        // 1- Send ResetPassword
+        // 2- ResetPassword
         public async Task<Response<string>> ResetPassword(RestPasswordDTO restPassword)
         {
             var findUser = await _userManager.FindByEmailAsync(restPassword.Email);
@@ -321,6 +331,46 @@ namespace BL.GeneralService.CMS
 
             return Success("Password reset successfully");
         }
+
+
+        #region This Service For that Project Onlly
+        public async Task<Response<bool>> UpdateAddressAsync(string userId, ShipAddressDTO addressDto)
+        {
+
+            var findUser = await _userManager.FindByIdAsync(userId);
+            if (findUser is null)
+            {
+                return NotFound<bool>(UserResources.UserNotFound);
+            }
+
+            var MyAddress = await _addressService.FindAddressByUserIdAsync(findUser.Id);
+
+            if (MyAddress.Type == ResponseType.NotFound)
+            {
+                return await _addressService.SaveAsync(addressDto, Guid.Parse(findUser.Id));
+            }
+            else
+            {
+                addressDto.Id = MyAddress.Data.Id;
+                return await _addressService.SaveAsync(addressDto, Guid.Parse(findUser.Id));
+
+            }
+            return BadRequest<bool>();
+        }
+
+
+        public async Task<Response<ShipAddressDTO>> GetUserAddressAsync(string userId)
+        {
+            var findUser = await _userManager.FindByIdAsync(userId);
+            if (findUser is null)
+            {
+                return NotFound<ShipAddressDTO>(UserResources.UserNotFound);
+            }
+            var MyAddress = await _addressService.FindAddressByUserIdAsync(findUser.Id);
+
+            return MyAddress;
+        }
+        #endregion
 
         #endregion
     }

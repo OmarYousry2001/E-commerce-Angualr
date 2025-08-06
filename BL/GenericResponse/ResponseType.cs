@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BL.GenericResponse
+﻿namespace BL.GenericResponse
 {
     public enum ResponseType
     {
-        Success,
-        Created,
-        Accepted,      
-        NotFound,
-        Unauthorized,
-        BadRequest,
-        Unprocessable
+        Success=1,
+        Created=2,
+        Accepted=3,      
+        NotFound=4,
+        Unauthorized=5,
+        BadRequest=6,
+        Unprocessable=7
     }
 
 

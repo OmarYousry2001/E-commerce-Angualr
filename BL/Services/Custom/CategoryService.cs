@@ -10,7 +10,6 @@ namespace BL.Services
     public class CategoryService : BaseService<Category, CategoryDTO>, ICategoryService
     {
         private readonly ITableRepository<Category> _categoryTableRepository;
-        private readonly IBaseMapper _mapper;
         public CategoryService(ITableRepository<Category> categoryTableRepository, IBaseMapper mapper) : base(categoryTableRepository, mapper)
         {
             _categoryTableRepository = categoryTableRepository;

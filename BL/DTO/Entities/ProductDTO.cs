@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Resources;
-using Resources.Data.Resources;
 using Shared.CustomValidation;
 using Shared.DTOs.Base;
 using System.ComponentModel.DataAnnotations;

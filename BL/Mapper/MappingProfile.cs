@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BL.DTO.Entities;
+using Domains.Entities;
 using Domains.Entities.Product;
 
 namespace BL.Mapper
@@ -30,6 +31,9 @@ namespace BL.Mapper
             CreateMap<Category, CategoryDTO>().ReverseMap();
             #endregion
 
+            #region Address
+            CreateMap<Address, ShipAddressDTO>().ReverseMap(); 
+            #endregion
 
 
         }

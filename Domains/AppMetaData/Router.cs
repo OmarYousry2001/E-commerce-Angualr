@@ -74,6 +74,12 @@
             public const string ConfirmResetPasswordCode = Prefix + "ConfirmResetPasswordCode";
             public const string ResetPassword = Prefix + "ResetPassword";
 
+
+            // For This Project only
+            public const string UpdateAddress = Prefix + "UpdateAddress";
+            public const string GetAddressForUser = Prefix + "GetAddressForUser";
+
+            
         }
         public static class AuthenticationRouting
         {
