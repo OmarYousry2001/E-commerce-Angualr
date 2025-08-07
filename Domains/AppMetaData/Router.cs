@@ -33,7 +33,18 @@
             public const string Update = Prefix + "Update";
             public const string Delete = Prefix + SingleRoute;
         }
+        public static class OrdersRouting
+        {
+            public const string Prefix = Rule + "Orders/";
+            public const string GetAll = Prefix + "GetAll";
+            public const string GetById = Prefix + SingleRoute;
+            public const string Create = Prefix + "Create";
+            public const string Update = Prefix + "Update";
+            public const string Delete = Prefix + SingleRoute;
+            public const string GetOrdersForUser = Prefix + "GetOrdersForUser";
 
+            
+        }
 
         public static class MovieRouting
         {

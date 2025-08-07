@@ -4,6 +4,7 @@ using DAL.ApplicationContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250807123929_UpdateProductPricePrecision")]
+    partial class UpdateProductPricePrecision
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -407,144 +410,6 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Domains.Order.DeliveryMethod", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CurrentState")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DeliveryTime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DeliveryMethods");
-                });
-
-            modelBuilder.Entity("Domains.Order.OrderItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CurrentState")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MainImage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("OrdersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("ProductItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrdersId");
-
-                    b.ToTable("OrderItems");
-                });
-
-            modelBuilder.Entity("Domains.Order.Orders", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BuyerEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CurrentState")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PaymentIntentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("SubTotal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedDateUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("deliveryMethodId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("deliveryMethodId");
-
-                    b.ToTable("Orders");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -714,71 +579,6 @@ namespace DAL.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domains.Order.OrderItem", b =>
-                {
-                    b.HasOne("Domains.Order.Orders", null)
-                        .WithMany("orderItems")
-                        .HasForeignKey("OrdersId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Domains.Order.Orders", b =>
-                {
-                    b.HasOne("Domains.Order.DeliveryMethod", "deliveryMethod")
-                        .WithMany()
-                        .HasForeignKey("deliveryMethodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("Domains.Order.ShippingAddress", "shippingAddress", b1 =>
-                        {
-                            b1.Property<Guid>("OrdersId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("ShippingCity");
-
-                            b1.Property<string>("FirstName")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("ShippingFirstName");
-
-                            b1.Property<string>("LastName")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("ShippingLastName");
-
-                            b1.Property<string>("State")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("ShippingState");
-
-                            b1.Property<string>("Street")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("ShippingStreet");
-
-                            b1.Property<string>("ZipCode")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("ShippingZipCode");
-
-                            b1.HasKey("OrdersId");
-
-                            b1.ToTable("Orders");
-
-                            b1.WithOwner()
-                                .HasForeignKey("OrdersId");
-                        });
-
-                    b.Navigation("deliveryMethod");
-
-                    b.Navigation("shippingAddress")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Domains.Entities.Identity.Role", null)
@@ -848,11 +648,6 @@ namespace DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("Domains.Order.Orders", b =>
-                {
-                    b.Navigation("orderItems");
                 });
 #pragma warning restore 612, 618
         }

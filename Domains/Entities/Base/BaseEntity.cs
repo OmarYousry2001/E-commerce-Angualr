@@ -8,11 +8,11 @@ namespace Domains.Entities.Base
         [Key]
         public Guid Id { get; set; }
 
-        public int CurrentState { get; set; }
+        public int CurrentState { get; set; } = 1;
 
         public Guid CreatedBy { get; set; }
 
-        public DateTime CreatedDateUtc { get; set; }
+        public DateTime CreatedDateUtc { get; set; } = DateTime.UtcNow;    
 
         public Guid? UpdatedBy { get; set; }
 

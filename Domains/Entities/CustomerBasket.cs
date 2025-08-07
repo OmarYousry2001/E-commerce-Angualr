@@ -15,6 +15,6 @@ namespace Domains.Entities
 
         public string PaymentIntentId { get; set; }
         public string ClientSecret { get; set; }
-        public List<BasketItem> basketItems { get; set; } = new List<BasketItem>(); //value
+        public List<BasketItem> BasketItems { get; set; } = new List<BasketItem>(); //value
     }
 }

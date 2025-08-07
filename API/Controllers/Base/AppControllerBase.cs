@@ -12,6 +12,8 @@ namespace API.Base
         protected Guid GuidUserId =>
        Guid.TryParse(UserId, out var guid) ? guid : Guid.NewGuid();
 
+        protected string? UserEmail => User.FindFirst(ClaimTypes.Email)?.Value;
+
         #region Actions
         //public ObjectResult NewResult<T>(Response<T> response)
         //{

@@ -3,6 +3,7 @@ using Domains.Entities;
 using Domains.Entities.Identity;
 using Domains.Entities.Product;
 using Domains.Identity;
+using Domains.Order;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -162,6 +163,51 @@ namespace DAL.ApplicationContext
                 await context.Rating.AddRangeAsync(ratings);
                 await context.SaveChangesAsync();
             }
+
+            // 5. Seed DeliveryMethods
+            if (!context.DeliveryMethods.Any())
+            {
+                var deliveryMethods = new List<DeliveryMethod>
+    {
+        new DeliveryMethod
+        {
+            Id = Guid.NewGuid(),
+            Name = "Standard Shipping",
+            Price = 49.99m,
+            DeliveryTime = "5-7 business days",
+            Description = "Reliable and affordable shipping method",
+            CurrentState = 1,
+            CreatedBy = adminUserId,
+            CreatedDateUtc = DateTime.UtcNow
+        },
+        new DeliveryMethod
+        {
+            Id = Guid.NewGuid(),
+            Name = "Express Delivery",
+            Price = 99.99m,
+            DeliveryTime = "1-2 business days",
+            Description = "Fast shipping for urgent needs",
+            CurrentState = 1,
+            CreatedBy = adminUserId,
+            CreatedDateUtc = DateTime.UtcNow
+        },
+        new DeliveryMethod
+        {
+            Id = Guid.NewGuid(),
+            Name = "Free Pickup",
+            Price = 0.00m,
+            DeliveryTime = "Same day pickup",
+            Description = "Pickup your order from the nearest branch",
+            CurrentState = 1,
+            CreatedBy = adminUserId,
+            CreatedDateUtc = DateTime.UtcNow
+        }
+    };
+
+                await context.DeliveryMethods.AddRangeAsync(deliveryMethods);
+                await context.SaveChangesAsync();
+            }
+
         }
 
 

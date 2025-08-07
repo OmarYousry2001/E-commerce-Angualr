@@ -272,7 +272,7 @@ namespace API
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IAddressService, AddressService>();
-
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
 
             // add memory cache

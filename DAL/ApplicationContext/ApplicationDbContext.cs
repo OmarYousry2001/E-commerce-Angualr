@@ -3,6 +3,7 @@ using Domains.Entities;
 using Domains.Entities.Identity;
 using Domains.Entities.Product;
 using Domains.Identity;
+using Domains.Order;
 using EntityFrameworkCore.EncryptColumn.Extension;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
@@ -22,6 +23,9 @@ namespace DAL.ApplicationContext
         public DbSet<Rating> Rating { get; set; }
         public DbSet<UserRefreshToken> UserRefreshToken { get; set; }
 
+        public virtual DbSet<Orders> Orders { get; set; }
+        public virtual DbSet<OrderItem> OrderItems { get; set; }
+        public virtual DbSet<DeliveryMethod> DeliveryMethods { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -35,6 +39,33 @@ namespace DAL.ApplicationContext
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.UseEncryption(_encryptionProvider);
+
+            #region Order Confgiration
+
+            modelBuilder.Entity<Orders>().OwnsOne(x => x.shippingAddress, sa =>
+            {
+                sa.Property(a => a.FirstName).HasColumnName("ShippingFirstName");
+                sa.Property(a => a.LastName).HasColumnName("ShippingLastName");
+                sa.Property(a => a.City).HasColumnName("ShippingCity");
+                sa.Property(a => a.ZipCode).HasColumnName("ShippingZipCode");
+                sa.Property(a => a.Street).HasColumnName("ShippingStreet");
+                sa.Property(a => a.State).HasColumnName("ShippingState");
+            });
+
+            modelBuilder.Entity<Orders>()
+                .HasMany(x => x.orderItems)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Orders>()
+                .Property(x => x.status)
+                .HasConversion(
+                    o => o.ToString(),
+                    o => (Status)Enum.Parse(typeof(Status), o)
+                ); 
+            #endregion
+
+
             //modelBuilder.Entity<VwBook>(entity =>
             //{
             //    entity.HasNoKey();

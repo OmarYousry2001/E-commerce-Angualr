@@ -7,10 +7,11 @@ namespace Domains.Entities.Product
     {
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
+        [Column(TypeName = "decimal(18,2)")]
         public decimal NewPrice { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal OldPrice { get; set; }
         public double rating { get; set; }
-
         public Guid CategoryId { get; set; }
         [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; }
