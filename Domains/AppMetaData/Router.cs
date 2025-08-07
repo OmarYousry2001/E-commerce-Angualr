@@ -46,6 +46,16 @@
             
         }
 
+        public static class DeliveryMethodRouting
+        {
+            public const string Prefix = Rule + "DeliveryMethod/";
+            public const string GetAll = Prefix + "GetAll";
+            public const string GetById = Prefix + SingleRoute;
+            public const string Create = Prefix + "Create";
+            public const string Update = Prefix + "Update";
+            public const string Delete = Prefix + SingleRoute;
+        }
+
         public static class MovieRouting
         {
             public const string Prefix = Rule + "Movie/";

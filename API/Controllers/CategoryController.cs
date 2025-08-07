@@ -43,7 +43,7 @@ namespace API.Controllers
         }
 
         [HttpDelete(Router.CategoryRouting.Delete)]
-        public async Task<IActionResult> Update(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             return NewResult(await _categoryService.DeleteAsync(id, GuidUserId));
         }

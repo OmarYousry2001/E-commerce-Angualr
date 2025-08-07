@@ -3,7 +3,6 @@ using BL.DTO.Entities;
 using Domains.Entities;
 using Domains.Entities.Product;
 using Domains.Order;
-using StackExchange.Redis;
 
 namespace BL.Mapper
 {
@@ -39,16 +38,18 @@ namespace BL.Mapper
             CreateMap<ShippingAddress, ShipAddressDTO>().ReverseMap();
             #endregion
 
+            #region Orders
             CreateMap<Orders, OrderToReturnDTO>()
-                .ForMember(d => d.deliveryMethod, options => options.MapFrom(s => s.deliveryMethod.Name)).ReverseMap();
+          .ForMember(d => d.deliveryMethod, options => options.MapFrom(s => s.deliveryMethod.Name)).ReverseMap();
 
             CreateMap<ShippingAddress, ShipAddressDTO>().ReverseMap();
 
             CreateMap<OrderItem, OrderItemDTO>().ReverseMap();
+            #endregion
 
-            
-
-
+            #region DeliveryMethod
+            CreateMap<DeliveryMethod, DeliveryMethodDTO>().ReverseMap(); 
+            #endregion
 
 
 
