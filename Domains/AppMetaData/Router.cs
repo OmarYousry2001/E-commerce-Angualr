@@ -45,12 +45,19 @@
 
             
         }
-
         public static class DeliveryMethodRouting
         {
             public const string Prefix = Rule + "DeliveryMethod/";
             public const string GetAll = Prefix + "GetAll";
             public const string GetById = Prefix + SingleRoute;
+            public const string Create = Prefix + "Create";
+            public const string Update = Prefix + "Update";
+            public const string Delete = Prefix + SingleRoute;
+        }
+
+        public static class PaymentRouting
+        {
+            public const string Prefix = Rule + "Payment/";
             public const string Create = Prefix + "Create";
             public const string Update = Prefix + "Update";
             public const string Delete = Prefix + SingleRoute;
@@ -127,12 +134,12 @@
             public const string Edit = Prefix + "Edit";
             public const string Delete = Prefix + SingleRoute;
         }
-        public static class PaymentRouting
-        {
-            public const string Prefix = Rule + "Payment/";
-            public const string Create = Prefix + "{reservationId}";
-            public const string webhook = Prefix + "webhook";
-        }
+        //public static class PaymentRouting
+        //{
+        //    public const string Prefix = Rule + "Payment/";
+        //    public const string Create = Prefix + "{reservationId}";
+        //    public const string webhook = Prefix + "webhook";
+        //}
         //public static class AuthorizationRouting
         //{
         //    public const string Prefix = Rule + "Authorization/";

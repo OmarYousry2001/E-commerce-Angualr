@@ -1,6 +1,7 @@
 ﻿
 using BL.Abstracts;
 using BL.Contracts.GeneralService.CMS;
+using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
 using BL.Contracts.Services.Custom;
 using BL.DTO.Entities;
@@ -17,18 +18,23 @@ namespace BL.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomerBasketService _customerBasketService;
+        private readonly IPaymentService _paymentService;
+
         
         public OrderService(
             ITableRepository<Orders> orderTableRepository,
             IBaseMapper mapper,
             IUnitOfWork unitOfWork,
-            ICustomerBasketService customerBasketService
+            ICustomerBasketService customerBasketService,
+            IPaymentService paymentService
               )
             : base(unitOfWork.TableRepository<Orders>(), mapper)
         {
             _unitOfWork = unitOfWork;
             _customerBasketService = customerBasketService;
-   
+            _paymentService = paymentService;
+
+
 
         }
 
@@ -61,12 +67,12 @@ namespace BL.Services
                 var ship = _mapper.MapModel<ShipAddressDTO, ShippingAddress>(orderDTO.ShipAddress);
 
 
-                //var ExistOrder = await _unitOfWork.TableRepository<Orders>().FindAsync(m => m.PaymentIntentId == basketResponse.Data.PaymentIntentId && m.CurrentState ==1);
-                //if (ExistOrder is not null)
-                //{
-                //   await _unitOfWork.TableRepository<Orders>().UpdateCurrentStateAsync(ExistOrder.Id  , userId);
-                //    //await _paymentService.CreateOrUpdatePaymentAsync(basket.PaymentIntentId, deliverMethod.Id);
-                //}
+                var ExistOrder = await _unitOfWork.TableRepository<Orders>().FindAsync(m => m.PaymentIntentId == basketResponse.Data.PaymentIntentId && m.CurrentState == 1);
+                if (ExistOrder is not null)
+                {
+                    await _unitOfWork.TableRepository<Orders>().UpdateCurrentStateAsync(ExistOrder.Id, userId);
+                    await _paymentService.CreateOrUpdatePaymentAsync(basketResponse.Data.PaymentIntentId, deliverMethod.Id);
+                }
 
                 var order = new
                          Orders(BuyerEmail, subTotal, ship, deliverMethod, orderItems, basketResponse.Data.PaymentIntentId);
@@ -107,6 +113,21 @@ namespace BL.Services
             var result = _mapper.MapModel<Orders, OrderToReturnDTO>(order);
             return Success(result);
         }
-     
+
+        public async Task<Response<OrderToReturnDTO>> FindAsync(string PaymentIntentId)
+        {
+            var order = await _unitOfWork.TableRepository<Orders>()
+                 .FindAsync(x => x.CurrentState == 1 && x.PaymentIntentId == PaymentIntentId);
+            var result = _mapper.MapModel<Orders, OrderToReturnDTO>(order);
+            return Success(result); ;
+        }
+        public async Task<Response<bool>> SaveStatusPaymentAsync(OrderToReturnDTO orderToReturnDTO, Guid userId)
+        {
+            var entity = _mapper.MapModel<OrderToReturnDTO, Orders>(orderToReturnDTO);
+            var isSaved = await _unitOfWork.TableRepository<Orders>().SaveAsync(entity, userId);
+            if (isSaved) return Success(true);
+            else return BadRequest<bool>();
+        }
+
     }
 }
