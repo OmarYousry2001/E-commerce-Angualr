@@ -1,8 +1,10 @@
 ﻿using BL.Abstracts;
 using BL.Contracts.GeneralService.CMS;
+using BL.Contracts.GeneralService.UserManagement;
 using BL.Contracts.IMapper;
 using BL.Contracts.Services.Custom;
 using BL.GeneralService.CMS;
+using BL.GeneralService.UserManagement;
 using BL.Mapper;
 using BL.Mapper.Base;
 using BL.Services;
@@ -227,24 +229,17 @@ namespace API
             builder.Services.AddSingleton(emailSettings);
             #endregion
 
-
             #region Apply Redis Connection
             builder.Services.AddSingleton<IConnectionMultiplexer>(i =>
            {
                var config = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("redis"));
                return ConnectionMultiplexer.Connect(config);
-           }); 
+           });
             #endregion
 
-            // Register Auto Mapper
-            //builder.Services.AddAutoMapper(typeof(Program)); // Assuming 'Program' contains AutoMapper profiles
-            //builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
-
-            // With this corrected line:
+            #region AutoMapper
             builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
-            // line Cima
-            //builder.Services.AddAutoMapper(cfg => cfg.AddMaps(Assembly.GetExecutingAssembly()));
+            #endregion
 
 
             // Register repositories
@@ -264,6 +259,8 @@ namespace API
             builder.Services.AddScoped<IImageProcessingService, ImageProcessingService>();
             builder.Services.AddScoped<ICustomerBasketService, CustomerBasketService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+
 
             //builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             //builder.Services.AddScoped<IUserProfileService, UserProfileService>();
