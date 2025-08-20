@@ -12,10 +12,12 @@
         {
             public const string Prefix = Rule + "Product/";
             public const string GetAll = Prefix + "GetAll";
+            public const string PaginatedList = Prefix + "PaginatedList";
             public const string GetById = Prefix + SingleRoute;
             public const string Create = Prefix + "Create";
             public const string Update = Prefix + "Update";
             public const string Delete = Prefix + SingleRoute;
+            
         }
         public static class CategoryRouting
         {
@@ -63,29 +65,7 @@
             public const string Delete = Prefix + SingleRoute;
         }
 
-        public static class MovieRouting
-        {
-            public const string Prefix = Rule + "Movie/";
-            public const string list = Prefix + "List";
-            public const string PaginatedList = Prefix + "PaginatedList";
-            public const string GetById = Prefix + SingleRoute;
-            public const string Create = Prefix + "Create";
-            public const string Edit = Prefix + "Edit";
-            public const string Delete = Prefix + SingleRoute;
-        }
-        public static class ShowTimeRouting
-        {
-            public const string Prefix = Rule + "ShowTime/";
 
-            public const string list = Prefix + "List";
-            public const string comingList = Prefix + "ComingList";
-            public const string GetById = Prefix + SingleRoute;
-
-
-            public const string Create = Prefix + "Create";
-            public const string Edit = Prefix + "Edit";
-            public const string Delete = Prefix + SingleRoute;
-        }
         public static class ApplicationUserRouting
         {
             public const string Prefix = Rule + "User/";
@@ -101,6 +81,10 @@
             public const string SendResetPassword = Prefix + "SendResetPassword";
             public const string ConfirmResetPasswordCode = Prefix + "ConfirmResetPasswordCode";
             public const string ResetPassword = Prefix + "ResetPassword";
+            public const string IsAuthenticated = Prefix + "IsAuthenticated";
+            public const string GetUserName = Prefix + "GetUserName";
+
+
 
 
             // For This Project only
@@ -118,22 +102,9 @@
             public const string Login = Prefix + "Login";
             public const string Logout = Prefix + "Logout";
 
-
             public const string RefreshToken = Prefix + "RefreshToken";
         }
-        public static class ReservationRouting
-        {
-            public const string Prefix = Rule + "Reservation/";
-
-            public const string list = Prefix + "List";
-            public const string PaginatedList = Prefix + "PaginatedList";
-            public const string GetById = Prefix + SingleRoute;
-
-
-            public const string Create = Prefix + "Create";
-            public const string Edit = Prefix + "Edit";
-            public const string Delete = Prefix + SingleRoute;
-        }
+    
         //public static class PaymentRouting
         //{
         //    public const string Prefix = Rule + "Payment/";

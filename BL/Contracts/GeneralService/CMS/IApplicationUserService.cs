@@ -30,6 +30,7 @@ namespace BL.Abstracts
         Task<IList<ApplicationUser>> GetUsersInRoleAsync(string role);
         public Task<Response<RegisterDTO>> RegisterAsync(RegisterDTO user);
         public  Task<Response<string>> ResetPassword(RestPasswordDTO restPassword);
+        public  Task<Response<string>> SendResetUserPasswordCodeForAngular(string email);
 
         #region This Service For that Project Onlly
         public Task<Response<bool>> UpdateAddressAsync(string userId, ShipAddressDTO addressDto);

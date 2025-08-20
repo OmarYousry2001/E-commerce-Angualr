@@ -1,5 +1,6 @@
 ﻿using API.Base;
 using BL.Abstracts;
+using BL.Contracts.GeneralService.CMS;
 using BL.DTO.Entities;
 using BL.DTO.User;
 using Domains.AppMetaData;
@@ -13,10 +14,14 @@ namespace API.Controllers
     public class ApplicationUserController : AppControllerBase
     {
       private readonly IApplicationUserService _applicationUserService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public ApplicationUserController(IApplicationUserService applicationUserService)
+        
+        public ApplicationUserController(IApplicationUserService applicationUserService,
+            ICurrentUserService currentUserService)
         {
-            _applicationUserService = applicationUserService;  
+            _applicationUserService = applicationUserService;
+            _currentUserService = currentUserService;   
         }
 
         [HttpPost(Router.ApplicationUserRouting.Register)]
@@ -28,18 +33,18 @@ namespace API.Controllers
         }
 
         // After user Register 
-        [HttpGet(Router.ApplicationUserRouting.ConfirmEmail)]
+        [HttpPost(Router.ApplicationUserRouting.ConfirmEmail)]
         // Remember With Angular  Set http verb To HttpPost
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailDTO confirmEmailDTO)
         {
-            return NewResult(await _applicationUserService.ConfirmUserEmail(userId, code));
+            return NewResult(await _applicationUserService.ConfirmUserEmail(confirmEmailDTO.UserId, confirmEmailDTO.Code));
         }
 
 
-        [HttpPost(Router.ApplicationUserRouting.SendResetPassword)]
+        [HttpGet(Router.ApplicationUserRouting.SendResetPassword)]
         public async Task<IActionResult> SendResetPassword(string email)
         {
-            return NewResult(await _applicationUserService.SendResetUserPasswordCode(email));
+            return NewResult(await _applicationUserService.SendResetUserPasswordCodeForAngular(email));
         }
 
         [HttpPost(Router.ApplicationUserRouting.ResetPassword)]
@@ -54,14 +59,32 @@ namespace API.Controllers
         {
             return NewResult(await _applicationUserService.UpdateAddressAsync(UserId, addressDTO));
         }
-
+        [Authorize]
         [HttpGet(Router.ApplicationUserRouting.GetAddressForUser)]
         public async Task<IActionResult> GetAddressForUser()
         {
            return NewResult( await _applicationUserService.GetUserAddressAsync(UserId));
         }
 
-    
+        [HttpGet(Router.ApplicationUserRouting.IsAuthenticated)]
+        public IActionResult IsAuthenticated()
+        {
+            if(User.Identity?.IsAuthenticated == true)
+            {
+                return Ok();
+            }
+
+            return Unauthorized();
+        }
+
+  
+        [HttpGet(Router.ApplicationUserRouting.GetUserName)]
+        public IActionResult GetUserName()
+        {
+            return NewResult( _currentUserService.GetUserName());
+
+        }
+
     }
 }
 

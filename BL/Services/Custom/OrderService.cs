@@ -77,11 +77,13 @@ namespace BL.Services
                 var order = new
                          Orders(BuyerEmail, subTotal, ship, deliverMethod, orderItems, basketResponse.Data.PaymentIntentId);
 
+                //order.PaymentIntentId = "omar1234";
+
                 await _unitOfWork.TableRepository<Orders>().CreateAsync(order, userId);
                 await _customerBasketService.DeleteBasketAsync(orderDTO.BasketId);
 
                 await transaction.CommitAsync();
-                //orderDTO.Id = order.Id;
+                orderDTO.Id = order.Id;
                 return Success(orderDTO);
             }
             catch (Exception)
@@ -105,9 +107,9 @@ namespace BL.Services
         }
 
         public async Task<Response<OrderToReturnDTO>> GetOrderByIdAsync(Guid Id, string BuyerEmail)
-        {
+        { 
             var order = await _unitOfWork.TableRepository<Orders>()
-                        .FindAsync(x => x.CurrentState == 1 && x.BuyerEmail == BuyerEmail,
+                        .FindAsync(x => x.CurrentState == 1 && x.Id == Id && x.BuyerEmail == BuyerEmail,
                         x => x.orderItems,
                         x => x.deliveryMethod);
             var result = _mapper.MapModel<Orders, OrderToReturnDTO>(order);

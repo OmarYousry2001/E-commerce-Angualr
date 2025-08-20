@@ -32,7 +32,7 @@ namespace API.Controllers
 
 
         [Authorize]
-        [HttpPost(Router.AuthenticationRouting.Logout)]
+        [HttpGet(Router.AuthenticationRouting.Logout)]
         public async Task<IActionResult> Logout()
         {
             var result = await _authenticationService.SignOutAsync();

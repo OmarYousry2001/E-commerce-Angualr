@@ -1,4 +1,5 @@
 ﻿using DAL.Models;
+using Domains.Enums;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -17,7 +18,7 @@ namespace DAL.Contracts.Repositories.Generic
             int? take = null,
             string includeProperties = "",
             params Expression<Func<T, object>>[] thenIncludeProperties);
-        public  Task<PaginatedDataModel<T>> GetPageAsync(
+        public Task<PaginatedDataModel<T>> GetPageAsync(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>> filter = null,
@@ -30,5 +31,10 @@ namespace DAL.Contracts.Repositories.Generic
         TResult ExecuteScalarRawSql<TResult>(string sqlQuery, params object[] parameters);
         public Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? predicate = null, params Expression<Func<T, object>>[] includes);
         public Task<T> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
+        public IQueryable<T> BuildQuery(
+        int pageNumber,
+        int pageSize,
+        Expression<Func<T, bool>> filter = null,
+        OrderingEnum? ordering = null);
     }
 }

@@ -2,11 +2,13 @@
 using DAL.Contracts.Repositories.Generic;
 using DAL.Exceptions;
 using DAL.Models;
+using Domains.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace DAL.Repositories.Generic
 {
@@ -196,6 +198,55 @@ namespace DAL.Repositories.Generic
                 );
             }
         }
+       
+        public virtual  IQueryable<T> BuildQuery(
+         int pageNumber,
+         int pageSize,
+           Expression<Func<T, bool>> filter = null,
+          OrderingEnum? ordering = null)
+        {
+            try
+            {
+                IQueryable<T> query = DbSet.AsNoTracking();
+
+                if (filter != null)
+                {
+                    query = query.Where(filter);
+                }
+
+                if (ordering != null)
+                {
+                    query = ordering switch
+                    {
+                        OrderingEnum.PriceAce => query.OrderBy(m => EF.Property<decimal>(m, "NewPrice")),
+                        OrderingEnum.PriceDce => query.OrderByDescending(m => EF.Property<decimal>(m, "NewPrice")),
+                        _ => query.OrderBy(m => EF.Property<string>(m, "Name"))
+                    };
+                }
+                //var PaginatedList =    await  QueryableExtensions.ToPaginatedListAsync(query, pageNumber, pageSize);
+                return query;
+
+
+
+                //int totalCount = await query.CountAsync();
+
+                //query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+                //var data = await query.ToListAsync();
+
+                //return new PaginatedDataModel<T>(data, totalCount);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException(
+                    $"Error occurred in {nameof(GetPageAsync)} method for entity type {typeof(T).Name}.",
+                    ex,
+                    _logger
+                );
+            }
+        }
+
+
         /// <summary>
         /// Finds the first entity matching the predicate.
         /// </summary>
@@ -235,7 +286,13 @@ namespace DAL.Repositories.Generic
                     query = query.Where(predicate);
                 }
 
+                var sql = query.ToQueryString();
+                Console.WriteLine(sql);
                 return await query.FirstOrDefaultAsync();
+                //return await query.SingleOrDefaultAsync();
+
+               
+
             }
             catch (Exception ex)
             {
@@ -416,5 +473,7 @@ namespace DAL.Repositories.Generic
             if (pageSize <= 0)
                 throw new ArgumentException("Page size must be greater than zero.", nameof(pageSize));
         }
+
+       
     }
 }

@@ -1,7 +1,6 @@
-﻿using BL.Pagination;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace BL.Wrappers
+namespace DAL.Models
 {
     public static class QueryableExtensions
     {

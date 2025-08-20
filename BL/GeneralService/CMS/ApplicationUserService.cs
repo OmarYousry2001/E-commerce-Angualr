@@ -11,11 +11,13 @@ using Domains.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Resources;
 using Shared.DTOs.User;
 using System.Security.Cryptography;
 using System.Text;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace BL.GeneralService.CMS
 {
@@ -71,7 +73,7 @@ namespace BL.GeneralService.CMS
                     throw new Exception("user not founded");
                 await _userManager.AddToRoleAsync(user, Roles.User);
 
-                await SendConfirmUserEmailToken(user);
+                await SendConfirmUserEmailTokenAngular(user);
 
                 await transaction.CommitAsync();
 
@@ -104,11 +106,12 @@ namespace BL.GeneralService.CMS
         public async Task SendConfirmUserEmailTokenAngular(ApplicationUser user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             //var requestAccessor = _httpContextAccessor.HttpContext.Request;
 
             #region Angualr
-            var frontendUrl = "https://localhost:4200";
-            var returnURL = $"{frontendUrl}/account/Active?userId={user.Id}&code={code}";
+            var frontendUrl = "http://localhost:4200";
+            var returnURL = $"{frontendUrl}/account/Active?userId={user.Id}&code={encodedCode}";
             #endregion
 
             //var returnURL = requestAccessor.Scheme + "://" + requestAccessor.Host + _urlHelper.Action("ConfirmEmail", "ApplicationUser", new { userId = user.Id, code = code });
@@ -126,7 +129,9 @@ namespace BL.GeneralService.CMS
             if (user.EmailConfirmed)
                 return BadRequest<string>(NotifiAndAlertsResources.EmailAlreadyConfirmed);
 
-            var identityResult = await _userManager.ConfirmEmailAsync(user, code);
+            var decodedCode = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var identityResult = await _userManager.ConfirmEmailAsync(user, decodedCode);
             if (!identityResult.Succeeded)
                 return BadRequest<string>(identityResult.Errors.FirstOrDefault()?.Description);
 
@@ -184,6 +189,78 @@ namespace BL.GeneralService.CMS
                 return isPasswordChanged.Errors.FirstOrDefault()?.Description ?? "An error occurred while changing the password";
 
         }
+
+        public async Task<Response<string>> SendResetUserPasswordCodeForAngular(string email)
+        {
+            await using var transaction = await _applicationDBContext.Database.BeginTransactionAsync();
+            try
+            {
+                //Get User
+                var user = await FindByEmailAsync(email);
+                if (user == null) return NotFound<string>(UserResources.UserNotFound);
+
+                //Generate Random Code & insert it in User Row
+                var randomCode = new Random().Next(0, 1000000).ToString("D6");
+                user.Code = HashCode(randomCode);
+                var identityResult = await _userManager.UpdateAsync(user);
+                if (!identityResult.Succeeded)
+                {
+                    transaction.Rollback();
+                    return BadRequest<string>(UserResources.ErrorInUpdateUser);
+                }
+
+                #region Angualr
+                var frontendUrl = "http://localhost:4200";
+                var returnURL = $"{frontendUrl}/account/Reset-Password?email={user.Email}&code={randomCode}";
+                #endregion
+
+                var userFullName = user.DisplayName;
+                //var message = $"<!DOCTYPE html>\r\n<html>\r\n  <head></head>\r\n  <body style=\"font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; margin: 0; padding: 0;\">\r\n    <div style=\"max-width: 600px; margin: 20px auto; background: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;\">\r\n      <div style=\"background: #4caf50; color: #ffffff; text-align: center; padding: 20px;\">\r\n        <h2 style=\"margin: 0;\">Confirm Your Email</h2>\r\n      </div>\r\n      <div style=\"padding: 20px; text-align: left;\">\r\n        <h1 style=\"font-size: 24px; color: #4caf50; margin: 0;\">Hello, {userFullName}!</h1>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          Thank you for registering with us. Please confirm your email address to complete your registration and start using our services.\r\n        </p>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">Click the button below to confirm your email address:</p>\r\n        <a href='{returnURL}' style=\"display: inline-block; padding: 10px 20px; margin-top: 20px; background: #4caf50; color: #ffffff; text-decoration: none; border-radius: 4px; font-size: 16px;\">Confirm Email</a>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          If the button above doesn't work, you can copy and paste the following link into your browser:\r\n        </p>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\"><a href='{returnURL}' style=\"color: #4caf50; text-decoration: underline;\">[Confirmation Link]</a></p>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          If you didn't create an account with us, please ignore this email.\r\n        </p>\r\n      </div>\r\n      <div style=\"background: #f1f1f1; text-align: center; padding: 10px; font-size: 12px; color: #555;\">\r\n        <p style=\"margin: 0;\">&copy; 2025 Cinema App. All rights reserved.</p>\r\n      </div>\r\n    </div>\r\n  </body>\r\n</html>";
+
+
+                var message = $@"<!DOCTYPE html>
+<html>
+  <head></head>
+  <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; margin: 0; padding: 0;'>
+    <div style='max-width: 600px; margin: 20px auto; background: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;'>
+      <div style='background: #4caf50; color: #ffffff; text-align: center; padding: 20px;'>
+        <h2 style='margin: 0;'>Reset Your Password</h2>
+      </div>
+      <div style='padding: 20px; text-align: left;'>
+        <h1 style='font-size: 24px; color: #4caf50; margin: 0;'>Hello, {userFullName}!</h1>
+        <p style='margin: 10px 0; font-size: 16px;'>
+          You requested to reset your password. Please use the following One-Time Password (OTP) to complete the process:
+        </p>
+       <div style='margin: 20px 0; text-align: center;'>
+  <a href='{frontendUrl}/account/Reset-Password?email={user.Email}&code={randomCode}'
+     style='display: inline-block; font-size: 22px; font-weight: bold; color: #ffffff; background: #4caf50; padding: 15px 30px; border-radius: 6px; text-decoration: none; border: 1px solid #4caf50; letter-spacing: 3px;'>
+    {randomCode}
+  </a>
+</div>
+        <p style='margin: 10px 0; font-size: 16px;'>
+          Enter this OTP in the password reset form on our website or app to continue.
+        </p>
+        <p style='margin: 10px 0; font-size: 16px;'>
+          If you didn’t request this reset, you can safely ignore this email. Your password will not change unless the OTP is used.
+        </p>
+      </div>
+      <div style='background: #f1f1f1; text-align: center; padding: 10px; font-size: 12px; color: #555;'>
+        <p style='margin: 0;'>&copy; 2025 Cinema App. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>";
+                await _emailsService.SendEmail(email, userFullName, message, "Reset Password");
+                await transaction.CommitAsync();
+                return Success(NotifiAndAlertsResources.Success);
+
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                return BadRequest<string>();
+            }
+        }
         public async Task<Response<string>> SendResetUserPasswordCode(string email)
         {
             await using var transaction = await _applicationDBContext.Database.BeginTransactionAsync();
@@ -207,7 +284,7 @@ namespace BL.GeneralService.CMS
 
                 var message = $"<!DOCTYPE html>\r\n<html>\r\n  <head></head>\r\n  <body style=\"font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; margin: 0; padding: 0;\">\r\n    <div style=\"max-width: 600px; margin: 20px auto; background: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;\">\r\n      <div style=\"background: #4caf50; color: #ffffff; text-align: center; padding: 20px;\">\r\n        <h2 style=\"margin: 0;\">Reset Your Password</h2>\r\n      </div>\r\n      <div style=\"padding: 20px; text-align: left;\">\r\n        <h1 style=\"font-size: 24px; color: #4caf50; margin: 0;\">Hello, {userFullName}!</h1>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          You requested to reset your password. Use the code below to reset it:\r\n        </p>\r\n        <div style=\"margin: 20px 0; text-align: center;\">\r\n          <span style=\"display: inline-block; font-size: 20px; font-weight: bold; color: #4caf50; background: #f1f1f1; padding: 10px 20px; border-radius: 4px; border: 1px solid #dddddd;\">\r\n            {randomCode}\r\n          </span>\r\n        </div>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          Enter this code in the password reset form on our website or app to complete the process.\r\n        </p>\r\n        <p style=\"margin: 10px 0; font-size: 16px;\">\r\n          If you didn’t request this, you can safely ignore this email. Your password will not change unless you use the code above.\r\n        </p>\r\n      </div>\r\n      <div style=\"background: #f1f1f1; text-align: center; padding: 10px; font-size: 12px; color: #555;\">\r\n        <p style=\"margin: 0;\">&copy; 2025 Cinema App. All rights reserved.</p>\r\n      </div>\r\n    </div>\r\n  </body>\r\n</html>\r\n";
 
-                await _emailsService.SendEmail(email, userFullName, message, "Reset Cinema App Password");
+                await _emailsService.SendEmail(email, userFullName, message, "Reset Password");
                 await transaction.CommitAsync();
                 return Success(NotifiAndAlertsResources.Success);
 

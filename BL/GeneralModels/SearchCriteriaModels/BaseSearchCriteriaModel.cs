@@ -1,4 +1,6 @@
-﻿namespace Shared.GeneralModels.SearchCriteriaModels
+﻿using Domains.Enums;
+
+namespace Shared.GeneralModels.SearchCriteriaModels
 {
     public class BaseSearchCriteriaModel
     {
@@ -16,5 +18,10 @@
         /// Number of items per page (default: 10, max: 100)
         /// </summary>
         public int PageSize { get; set; } = 10;
+
+        public OrderingEnum OrderingEnum { get; set; }
+        public Guid? CategoryId { get; set; }
+
+        
     }
 }

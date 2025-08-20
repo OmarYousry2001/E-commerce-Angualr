@@ -3,6 +3,7 @@ using BL.Contracts.Services.Custom;
 using BL.DTO.Entities;
 using Domains.AppMetaData;
 using Microsoft.AspNetCore.Mvc;
+using Shared.GeneralModels.SearchCriteriaModels;
 
 namespace API.Controllers
 {
@@ -15,17 +16,33 @@ namespace API.Controllers
         {
             _ProductService = ProductService;
         }
+        
+
+        [HttpGet(Router.ProductRouting.PaginatedList)]
+        public async Task<IActionResult> PaginatedList([FromQuery] BaseSearchCriteriaModel SearchCriterial)
+        {
+            try
+            {
+                var response =await  _ProductService.GetProductsPaginatedListAsync(SearchCriterial);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet(Router.ProductRouting.GetAll)]
         public async Task<IActionResult> GetAll()
         {
-            return NewResult(await _ProductService.GetAllAsync());
+            return NewResult(await _ProductService.GetAllWithIncludesAsync());
         }
 
         [HttpGet(Router.ProductRouting.GetById)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return NewResult(await _ProductService.FindByIdAsync(id));
+            return NewResult(await _ProductService.FindByIdWithIncludesAsync(id));
         }
 
         [HttpPost(Router.ProductRouting.Create)]

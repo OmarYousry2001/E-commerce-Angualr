@@ -1,4 +1,4 @@
-﻿namespace BL.Pagination
+﻿namespace DAL.Models
 {
     public class PaginatedResult<T>
     {

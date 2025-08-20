@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using BL.Contracts.IMapper;
+using DAL.Models;
 
 namespace BL.Mapper.Base
 {
@@ -20,6 +22,12 @@ namespace BL.Mapper.Base
         public IEnumerable<TDestination> MapList<TSource, TDestination>(IEnumerable<TSource> source)
         {
             return _mapper.Map<IEnumerable<TDestination>>(source);
+        }
+        public async Task<PaginatedResult<TDestination>> ProjectToPaginatedListAsync<TDestination>(IQueryable source,int pageNumber,int pageSize) where TDestination : class
+        {
+            return await source
+                .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+                .ToPaginatedListAsync(pageNumber, pageSize);
         }
     }
 }

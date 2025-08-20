@@ -1,5 +1,6 @@
 ﻿
 
+using BL.GenericResponse;
 using Domains.Identity;
 
 namespace BL.Contracts.GeneralService.CMS
@@ -9,5 +10,9 @@ namespace BL.Contracts.GeneralService.CMS
         public Task<ApplicationUser> GetUserAsync();
         public Guid GetUserId();
         public  Task<bool> CheckIfRuleExist(string roleName);
+        public Task<Response<string?>> GetUserNameAsync();
+        public Response<string?> GetUserName();
+
+        
     }
 }

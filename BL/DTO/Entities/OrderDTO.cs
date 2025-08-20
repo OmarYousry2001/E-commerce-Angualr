@@ -2,6 +2,9 @@
 {
     public class OrderDTO 
     {
+        
+        public Guid Id { get; set; }
+
         public Guid DeliveryMethodId { get; set; }
         public string BasketId { get; set; } = null!;
         public ShipAddressDTO ShipAddress { get; set; } 

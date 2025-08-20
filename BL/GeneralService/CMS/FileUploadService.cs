@@ -147,6 +147,15 @@ namespace BL.GeneralService.CMS
         }
         public async Task<List<string>> AddImagesAsync(IFormFileCollection files, string featureFolder, string nameEntity, List<string>? oldFileNames = null)
         {
+            string CleanFileName(string input)
+            {
+                var invalidChars = Path.GetInvalidFileNameChars();
+                return new string(input.Where(ch => !invalidChars.Contains(ch)).ToArray()).Trim();
+            }
+
+            featureFolder = CleanFileName(featureFolder);
+            nameEntity = CleanFileName(nameEntity);
+
             var savedImagePaths = new List<string>();
             var uploadsFolder = Path.Combine(_env.WebRootPath, _imagesFolder, featureFolder, nameEntity);
             Directory.CreateDirectory(uploadsFolder);

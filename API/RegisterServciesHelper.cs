@@ -16,7 +16,6 @@ using DAL.Repositories.Generic;
 using DAL.UnitOfWork;
 using Domains.Helpers;
 using Domains.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -110,6 +109,12 @@ namespace API
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+
+
+                //x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                //x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                //x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 //Here option For Cookie Authentication
             }).AddCookie(x =>
                     {
@@ -140,10 +145,10 @@ namespace API
                     OnMessageReceived = context =>
                     {
                         var token = context.Request.Cookies["token"];
-                        if (!string.IsNullOrEmpty(token))
-                        {
+                        //if (!string.IsNullOrEmpty(token))
+                        //{
                             context.Token = token;
-                        }
+                        //}
                         return Task.CompletedTask;
                     },
                     OnChallenge = context =>
@@ -249,8 +254,6 @@ namespace API
             builder.Services.AddScoped(typeof(IBaseMapper), typeof(BaseMapper));
 
             // CMS
-            //builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
-            //builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IUserTokenService, UserTokenService>();
@@ -260,10 +263,8 @@ namespace API
             builder.Services.AddScoped<ICustomerBasketService, CustomerBasketService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
-
-
-            //builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-            //builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddHttpContextAccessor();
 
             // Project Services
             builder.Services.AddScoped<IProductService, ProductService>();
@@ -272,47 +273,9 @@ namespace API
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IDeliveryMethodService, DeliveryMethodService>();
 
-
             // add memory cache
             builder.Services.AddMemoryCache();
 
-            //  Swagger Configuration
-            //builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo
-            //    {
-            //        Title = "Book Review Platform API",
-            //        Version = "v1",
-            //        Description = "API for managing Book Review Platform services."
-            //    });
-
-            //    // JWT Bearer token authentication
-            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            //    {
-            //        In = ParameterLocation.Header,
-            //        Description = "Please enter 'Bearer' [space] and then your token",
-            //        Name = "Authorization",
-            //        Type = SecuritySchemeType.ApiKey,
-            //        BearerFormat = "JWT",
-            //        Scheme = "Bearer"
-            //    });
-
-            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            //    {
-            //     {
-            //      new OpenApiSecurityScheme
-            //     {
-            //    Reference = new OpenApiReference
-            //    {
-            //        Type = ReferenceType.SecurityScheme,
-            //        Id = "Bearer"
-            //    }
-            //    },
-            //new string[] {}
-            //    }
-            //    });
-            //  });
 
             builder.Services.AddResponseCompression(options =>
             {
@@ -331,10 +294,16 @@ namespace API
             {
                 options.AddPolicy("AllowAll", builder =>
                 {
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
+                    //builder
+                    //    .AllowAnyOrigin()
+                    //    .AllowAnyHeader()
+                    //    .AllowAnyMethod();
+
+
+                    builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
                 });
             });
 
