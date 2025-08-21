@@ -9,13 +9,18 @@ namespace API.Controllers
     [ApiController]
     public class CategoryController : AppControllerBase
     {
-        private readonly ICategoryService _categoryService;
+        #region Fields 
+        private readonly ICategoryService _categoryService; 
+        #endregion
 
+        #region Constructor
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
-        }
+        } 
+        #endregion
 
+        #region Apis
         [HttpGet(Router.CategoryRouting.GetAll)]
         public async Task<IActionResult> GetAll()
         {
@@ -31,13 +36,13 @@ namespace API.Controllers
         }
 
         [HttpPost(Router.CategoryRouting.Create)]
-        public async Task<IActionResult> Create( CategoryDTO product)
+        public async Task<IActionResult> Create(CategoryDTO product)
         {
             return NewResult(await _categoryService.SaveAsync(product, GuidUserId));
         }
 
         [HttpPut(Router.CategoryRouting.Update)]
-        public async Task<IActionResult> Update( CategoryDTO product)
+        public async Task<IActionResult> Update(CategoryDTO product)
         {
             return NewResult(await _categoryService.SaveAsync(product, GuidUserId));
         }
@@ -46,7 +51,8 @@ namespace API.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             return NewResult(await _categoryService.DeleteAsync(id, GuidUserId));
-        }
+        } 
+        #endregion
 
     }
 }

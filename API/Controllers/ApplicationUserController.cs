@@ -13,17 +13,22 @@ namespace API.Controllers
     [ApiController]
     public class ApplicationUserController : AppControllerBase
     {
-      private readonly IApplicationUserService _applicationUserService;
-        private readonly ICurrentUserService _currentUserService;
 
-        
+        #region Fields
+        private readonly IApplicationUserService _applicationUserService;
+        private readonly ICurrentUserService _currentUserService;
+        #endregion
+
+        #region Constructor
         public ApplicationUserController(IApplicationUserService applicationUserService,
-            ICurrentUserService currentUserService)
+           ICurrentUserService currentUserService)
         {
             _applicationUserService = applicationUserService;
-            _currentUserService = currentUserService;   
+            _currentUserService = currentUserService;
         }
+        #endregion
 
+        #region Apis
         [HttpPost(Router.ApplicationUserRouting.Register)]
         public async Task<ActionResult<RegisterDTO>> Register(RegisterDTO registerDTO)
         {
@@ -39,7 +44,6 @@ namespace API.Controllers
         {
             return NewResult(await _applicationUserService.ConfirmUserEmail(confirmEmailDTO.UserId, confirmEmailDTO.Code));
         }
-
 
         [HttpGet(Router.ApplicationUserRouting.SendResetPassword)]
         public async Task<IActionResult> SendResetPassword(string email)
@@ -63,13 +67,13 @@ namespace API.Controllers
         [HttpGet(Router.ApplicationUserRouting.GetAddressForUser)]
         public async Task<IActionResult> GetAddressForUser()
         {
-           return NewResult( await _applicationUserService.GetUserAddressAsync(UserId));
+            return NewResult(await _applicationUserService.GetUserAddressAsync(UserId));
         }
 
         [HttpGet(Router.ApplicationUserRouting.IsAuthenticated)]
         public IActionResult IsAuthenticated()
         {
-            if(User.Identity?.IsAuthenticated == true)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 return Ok();
             }
@@ -77,13 +81,13 @@ namespace API.Controllers
             return Unauthorized();
         }
 
-  
         [HttpGet(Router.ApplicationUserRouting.GetUserName)]
         public IActionResult GetUserName()
         {
-            return NewResult( _currentUserService.GetUserName());
+            return NewResult(_currentUserService.GetUserName());
 
-        }
+        } 
+        #endregion
 
     }
 }

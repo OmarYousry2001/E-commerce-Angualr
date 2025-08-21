@@ -9,17 +9,22 @@ namespace API.Controllers
     [ApiController]
     public class OrdersController : AppControllerBase
     {
-        private readonly IOrderService _orderService;
+        #region Fields 
+        private readonly IOrderService _orderService; 
+        #endregion
 
+        #region Constructor
         public OrdersController(IOrderService orderService)
         {
             _orderService = orderService;
-        }
+        } 
+        #endregion
 
+        #region Apis
         [HttpPost(Router.OrdersRouting.Create)]
         public async Task<IActionResult> Create(OrderDTO product)
         {
-            return NewResult(await _orderService.CreateOrdersAsync(product, UserEmail,  GuidUserId));
+            return NewResult(await _orderService.CreateOrdersAsync(product, UserEmail, GuidUserId));
         }
 
         [HttpGet(Router.OrdersRouting.GetOrdersForUser)]
@@ -32,11 +37,7 @@ namespace API.Controllers
         public async Task<ActionResult<OrderToReturnDTO>> GetById(Guid id)
         {
             return NewResult(await _orderService.GetOrderByIdAsync(id, UserEmail));
-        }
-
-        //[HttpGet("get-delivery")]
-        //public async Task<ActionResult> GetDeliver()
-        //=> Ok(await _orderService.GetDeliveryMethodAsync());
-
+        } 
+        #endregion
     }
 }

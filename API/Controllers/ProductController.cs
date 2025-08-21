@@ -10,20 +10,24 @@ namespace API.Controllers
     [ApiController]
     public class ProductController : AppControllerBase
     {
-        private readonly IProductService _ProductService;
+        #region Fields 
+        private readonly IProductService _ProductService; 
+        #endregion
 
+        #region Constructor
         public ProductController(IProductService ProductService)
         {
             _ProductService = ProductService;
         }
-        
+        #endregion
 
+        #region Apis
         [HttpGet(Router.ProductRouting.PaginatedList)]
         public async Task<IActionResult> PaginatedList([FromQuery] BaseSearchCriteriaModel SearchCriterial)
         {
             try
             {
-                var response =await  _ProductService.GetProductsPaginatedListAsync(SearchCriterial);
+                var response = await _ProductService.GetProductsPaginatedListAsync(SearchCriterial);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -46,13 +50,13 @@ namespace API.Controllers
         }
 
         [HttpPost(Router.ProductRouting.Create)]
-        public async Task<IActionResult> Create([FromForm] ProductDTO product )
+        public async Task<IActionResult> Create([FromForm] ProductDTO product)
         {
             return NewResult(await _ProductService.SaveAndUploadImageAsync(product, GuidUserId));
         }
 
         [HttpPut(Router.ProductRouting.Update)]
-        public async Task<IActionResult> Update([FromForm]  ProductDTO product)
+        public async Task<IActionResult> Update([FromForm] ProductDTO product)
         {
             return NewResult(await _ProductService.SaveAndUploadImageAsync(product, GuidUserId));
         }
@@ -61,7 +65,7 @@ namespace API.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             return NewResult(await _ProductService.DeleteAsync(id, GuidUserId));
-        }
-
+        } 
+        #endregion
     }
 }

@@ -9,13 +9,18 @@ namespace API.Controllers
     [ApiController]
     public class BasketsController : AppControllerBase
     {
+        #region Fields 
         private readonly ICustomerBasketService _customerBasketService;
+        #endregion
 
+        #region Constructor
         public BasketsController(ICustomerBasketService customerBasketService)
         {
             _customerBasketService = customerBasketService;
         }
+        #endregion
 
+        #region Apis
         [HttpGet(Router.BasketRouting.Get)]
         public async Task<IActionResult> Get(string id)
         {
@@ -35,10 +40,8 @@ namespace API.Controllers
         {
             var result = await _customerBasketService.DeleteBasketAsync(id);
             return NewResult(result);
-        }
-
-
-
+        } 
+        #endregion
 
     }
 }

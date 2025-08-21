@@ -10,13 +10,18 @@ namespace API.Controllers
     [ApiController]
     public class AuthenticationController : AppControllerBase
     {
+        #region Fields 
         private readonly IAuthenticationService _authenticationService;
+        #endregion
 
+        #region Constructor
         public AuthenticationController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
         }
+        #endregion
 
+        #region Apis
         [HttpPost(Router.AuthenticationRouting.Login)]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
@@ -29,7 +34,6 @@ namespace API.Controllers
 
             return NewResult(result);
         }
-
 
         [Authorize]
         [HttpGet(Router.AuthenticationRouting.Logout)]
@@ -63,10 +67,8 @@ namespace API.Controllers
             };
 
             Response.Cookies.Delete("token", cookieOptions);
-        }
-
-
-
+        } 
+        #endregion
 
     }
 }
