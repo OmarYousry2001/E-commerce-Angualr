@@ -23,15 +23,12 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using StackExchange.Redis;
 using System.Text;
 using Role = Domains.Entities.Identity.Role;
-
-
 
 namespace API
 {
@@ -246,8 +243,41 @@ namespace API
             builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
             #endregion
 
+            #region Memory Cache
+            builder.Services.AddMemoryCache();
+            #endregion
 
-            // Register repositories
+            #region Configure CORS Origin 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+                });
+            });
+            #endregion
+
+            #region Configure Gzip
+
+            builder.Services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+                options.EnableForHttps = false; // Changed to false to prevent BREACH/CRIME attacks
+            });
+
+            // Configure Gzip compression options
+            builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = System.IO.Compression.CompressionLevel.Optimal;
+            });
+            #endregion
+
+            #region Registerions
+
+            // Register Repositories
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(ITableRepository<>), typeof(TableRepository<>));
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -272,40 +302,9 @@ namespace API
             builder.Services.AddScoped<IAddressService, AddressService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IDeliveryMethodService, DeliveryMethodService>();
-
-            // add memory cache
-            builder.Services.AddMemoryCache();
-
-
-            builder.Services.AddResponseCompression(options =>
-            {
-                options.Providers.Add<GzipCompressionProvider>();
-                options.EnableForHttps = false; // Changed to false to prevent BREACH/CRIME attacks
-            });
-
-            // Configure Gzip compression options
-            builder.Services.Configure<GzipCompressionProviderOptions>(options =>
-            {
-                options.Level = System.IO.Compression.CompressionLevel.Optimal;
-            });
-
-            // Configure CORS to allow requests from any origin
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", builder =>
-                {
-                    //builder
-                    //    .AllowAnyOrigin()
-                    //    .AllowAnyHeader()
-                    //    .AllowAnyMethod();
-
-
-                    builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-                });
-            });
+            builder.Services.AddScoped<IPaymentStatusService, PaymentStatusService>();
+            
+            #endregion
 
 
         }

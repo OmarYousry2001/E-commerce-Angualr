@@ -62,6 +62,7 @@
             public const string Prefix = Rule + "Payment/";
             public const string Create = Prefix + "Create";
             public const string Update = Prefix + "Update";
+            public const string webhook = Prefix + "webhook";
             public const string Delete = Prefix + SingleRoute;
         }
 

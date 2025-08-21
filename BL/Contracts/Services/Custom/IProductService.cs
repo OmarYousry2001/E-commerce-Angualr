@@ -1,5 +1,4 @@
-﻿
-using BL.Contracts.Services.Generic;
+﻿using BL.Contracts.Services.Generic;
 using BL.DTO.Entities;
 using BL.GenericResponse;
 using DAL.Models;
